@@ -8,6 +8,7 @@
 ---@field public inventory table
 ---@field public characterInfos table
 ---@field public coords vector3
+---@field public weight number
 _Offline_Player = {}
 
 ---InitPlayer
@@ -27,6 +28,7 @@ function _Offline_Player:Initplayer(obj)
     data.inventory = obj.inventory
     data.characterInfos = obj.characterInfos
     data.coords = obj.coords
+    data.weight = obj.weight
     _Offline_Player = obj
 end
 
@@ -35,5 +37,5 @@ _Offline_Client_.RegisterClientEvent('InitPlayer', function(data)
 end)
 
 _Offline_Client_.RegisterClientEvent('UpdatePlayer', function(data)
-    _Offline_Player.coords = data.coords
+    _Offline_Player = data
 end)

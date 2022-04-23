@@ -94,5 +94,6 @@ end
 
 _Offline_Server_.RegisterServerEvent('updateNumberPlayer', function()
     local _source = source
+    Wait(1000)
     _Offline_Server_.SendEventToClient('updateNumberPlayer', _source, #_Offline_Server_.ServerPlayers)
 end)

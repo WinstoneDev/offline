@@ -19,7 +19,7 @@ Citizen.CreateThread(function()
             SetDiscordRichPresenceAssetSmallText(_Offline_Config_.DiscordStatus["SmallIconText"])
             SetDiscordRichPresenceAction(0, "Discord", _Offline_Config_.Informations["Discord"])
             SetDiscordRichPresenceAction(1, "Se connecter", "fivem://connect/play.offlinerp.fr")
-            SetRichPresence(GetPlayerName(PlayerId()) .. " - ".. players .. "/1024")
+            SetRichPresence("Offline Whitelist V1\n"..GetPlayerName(PlayerId()) .. " - ".. players .. "/1024")
         end
         Wait(time)
 	end

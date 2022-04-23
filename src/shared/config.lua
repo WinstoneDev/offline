@@ -82,6 +82,3 @@ _Offline_Config_.Items = {
         type = 'food'
     }
 }
-
-
----Test

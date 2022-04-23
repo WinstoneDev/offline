@@ -54,7 +54,8 @@ _Offline_Server_.RegisterServerEvent('registerPlayer', function(source)
                     characterInfos = {},
                     inventory = {},
                     currentZone = "Aucune",
-                    coords = vector3(0,0,0)
+                    coords = vector3(0,0,0),
+                    weight = _Offline_Inventory_.GetInventoryWeight({}) or 0
                 }
                 MySQL.Async.execute('INSERT INTO players (identifier, discordId, token, characterInfos, coords) VALUES(@identifier, @discordId, @token, @characterInfos, @coords)', {
                     ['@identifier'] = _Offline_Server_.ServerPlayers[source].identifier,
@@ -83,7 +84,8 @@ _Offline_Server_.RegisterServerEvent('registerPlayer', function(source)
                     characterInfos = {},
                     inventory = {},
                     currentZone = "Aucune",
-                    coords = json.decode(result[1].coords)
+                    coords = json.decode(result[1].coords),
+                    weight = 0
                 }
                 MySQL.Async.execute('UPDATE players SET token = @token, discordId = @discordId WHERE identifier = @identifier', {
                     ['@token'] = _Offline_Server_.ServerPlayers[source].token,
@@ -92,8 +94,11 @@ _Offline_Server_.RegisterServerEvent('registerPlayer', function(source)
                 })
                 _Offline_Inventory_.LoadInventoryFromDatabase(_Offline_Server_.ServerPlayers[source], function(inventory)
                     _Offline_Server_.ServerPlayers[source].inventory = json.decode(inventory)
-                end)
-                Wait(100)
+                end)                
+                Wait(250)
+                local weight = _Offline_Inventory_.GetInventoryWeight(_Offline_Server_.ServerPlayers[source].inventory)
+                _Offline_Server_.ServerPlayers[source].weight = weight or 0
+                Wait(250)
                 _Offline_Server_.SendEventToClient('InitPlayer', source, _Offline_Server_.ServerPlayers[source])
                 _Offline_Config_.Development.Print("Successfully registered player " .. GetPlayerName(source))
             end
@@ -109,10 +114,6 @@ CreateThread(function()
         for k, player in pairs(_Offline_Server_.ServerPlayers) do
             local coords = _Offline_Server_.GetEntityCoords(player.source)
             if player.coords ~= coords then
-                MySQL.Async.execute('UPDATE players SET coords = @coords WHERE id = @id', {
-                    ['@coords'] = json.encode(coords),
-                    ['@id'] = player.id
-                })
                 player.coords = coords
                 _Offline_Server_.SendEventToClient('UpdatePlayer', player.source, _Offline_Server_.ServerPlayers[player.source])
             end
@@ -128,6 +129,7 @@ _Offline_Server_.AddEventHandler('playerDropped', function()
             ['@coords'] = json.encode(_Offline_Server_.ServerPlayers[_source].coords),
             ['@id'] = _Offline_Server_.ServerPlayers[_source].id
         })
+        _Offline_Inventory_.SaveInventoryInDatabase(_Offline_Server_.ServerPlayers[_source], _Offline_Server_.ServerPlayers[_source].inventory)
         _Offline_Server_.ServerPlayers[_source] = nil
         _Offline_Config_.Development.Print("Player " .. _source .. " disconnected")
     end

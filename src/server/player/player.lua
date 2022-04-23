@@ -129,10 +129,3 @@ _Offline_Server_.AddEventHandler('playerDropped', function()
         _Offline_Config_.Development.Print("Player " .. _source .. " disconnected")
     end
 end)
-
-RegisterCommand('negro', function()
-    local table = {
-        ['bread'] = 5
-    }
-    _Offline_Inventory_.SaveInventoryInDatabase(_Offline_Server_.ServerPlayers[1], table)
-end)

@@ -184,8 +184,29 @@ function RageUI.Button(Label, Description, Style, Enabled, Action, Submenu)
     end
 end
 
+function KeyboardInput(textEntry, maxLength)
+    AddTextEntry("Message", textEntry)
+    DisplayOnscreenKeyboard(1, "Message", '', '', '', '', '', maxLength)
+    blockinput = true
+
+    while UpdateOnscreenKeyboard() ~= 1 and UpdateOnscreenKeyboard() ~= 2 do
+        Citizen.Wait(0)
+    end
+
+    if UpdateOnscreenKeyboard() ~= 2 then
+        local result = GetOnscreenKeyboardResult()
+        Citizen.Wait(500)
+        blockinput = false
+        return result
+    else
+        Citizen.Wait(500)
+        blockinput = false
+        return nil
+    end
+end
+
 function AddFiltre()
-    local resultFiltre = ESX.KeyboardInput("Filtre", 30)
+    local resultFiltre = KeyboardInput("Filtre", 30)
     if resultFiltre ~= nil then
         if not string.match(resultFiltre, "%w") then
             resultFiltre = nil

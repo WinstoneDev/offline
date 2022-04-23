@@ -34,4 +34,6 @@ function interactMenu:OpenMenu()
     end)
 end
 
-Keys.Register("F5", "F5", "Ouvrir InteractMenu", interactMenu:OpenMenu())
+Keys.Register("F5", "F5", "Ouvrir InteractMenu", function()
+    interactMenu:OpenMenu()
+end)

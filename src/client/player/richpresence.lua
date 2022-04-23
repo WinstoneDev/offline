@@ -5,6 +5,7 @@ _Offline_Client_.RegisterClientEvent('updateNumberPlayer', function(number)
 end)
 
 Citizen.CreateThread(function()
+    Wait(5000)
     _Offline_Client_.SendEventToServer('updateNumberPlayer')
 	while true do
         local time = 0 

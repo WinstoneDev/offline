@@ -45,16 +45,6 @@ _Offline_Config_.DiscordStatus = {
     ["LargeIconText"] = _Offline_Config_.Informations["Discord"],
     ["SmallIcon"] = "logo",
     ["SmallIconText"] = "Offline V".._Offline_Config_.Informations["Version"],
-    buttons = {
-        [1] = {
-            Name = "Discord",
-            Action = _Offline_Config_.Informations["Discord"]
-        },
-        [2] = {
-            Name = "Se connecter",
-            Action = "fivem://connect/play.offlinerp.fr"
-        }
-    }
 }
 
 ---@type table

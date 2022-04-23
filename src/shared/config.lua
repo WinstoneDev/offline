@@ -34,7 +34,7 @@ _Offline_Config_.Informations = {
     ["Version"] = "1.0.0",
     ["Name"] = "Offline V1 Whitelist",
     ["Description"] = "Serveur Roleplay Français",
-    ["Discord"] = "https://discord.gg/offlinerp"
+    ["Discord"] = "discord.gg/offlinerp"
 }
 
 ---@type table
@@ -46,11 +46,11 @@ _Offline_Config_.DiscordStatus = {
     ["SmallIcon"] = "logo",
     ["SmallIconText"] = "Offline V".._Offline_Config_.Informations["Version"],
     buttons = {
-        {
+        [1] = {
             Name = "Discord",
             Action = _Offline_Config_.Informations["Discord"]
         },
-        {
+        [2] = {
             Name = "Se connecter",
             Action = "fivem://connect/play.offlinerp.fr"
         }

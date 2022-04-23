@@ -32,20 +32,19 @@ end
 ---@public
 _Offline_Config_.Informations = {
     ["Version"] = "1.0.0",
-    ["Name"] = "Made in France",
+    ["Name"] = "Offline V1 Whitelist",
     ["Description"] = "Serveur Roleplay Français",
-    ["Discord"] = "https://discord.gg/Pvut2WvR"
+    ["Discord"] = "https://discord.gg/offlinerp"
 }
 
 ---@type table
 ---@public
 _Offline_Config_.DiscordStatus = {
-    ["ID"] = 964945522538455080,
-    ["Name"] = "Made in France",
-    ["LargeIcon"] = "logo_discord",
+    ["ID"] = 922259908576022578,
+    ["LargeIcon"] = "logo",
     ["LargeIconText"] = _Offline_Config_.Informations["Discord"],
-    ["SmallIcon"] = "logo_discord",
-    ["SmallIconText"] = _Offline_Config_.Informations["Name"].." ".._Offline_Config_.Informations["Version"],
+    ["SmallIcon"] = "logo",
+    ["SmallIconText"] = "Offline V".._Offline_Config_.Informations["Version"],
     buttons = {
         [1] = {
             Name = "Discord",
@@ -53,7 +52,7 @@ _Offline_Config_.DiscordStatus = {
         },
         [2] = {
             Name = "Se connecter",
-            Action = "fivem://connect/play.gtamif.fr"
+            Action = "fivem://connect/play.offlinerp.fr"
         }
     }
 }

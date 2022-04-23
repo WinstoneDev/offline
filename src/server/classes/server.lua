@@ -91,3 +91,8 @@ _Offline_Server_.GetEntityCoords = function(entity)
     local _entity = GetEntityCoords(GetPlayerPed(entity))
     return vector3(_entity.x, _entity.y, _entity.z)
 end
+
+_Offline_Server_.RegisterServerEvent('updateNumberPlayer', function()
+    local _source = source
+    _Offline_Server_.SendEventToClient('updateNumberPlayer', _source, #_Offline_Server_.ServerPlayers)
+end)

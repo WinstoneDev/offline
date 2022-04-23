@@ -27,6 +27,10 @@ function interactMenu:OpenMenu()
                 RageUI.Button('Porte-feuille', nil, {}, true, {}, interactMenu.walletMenu)
             end)
             RageUI.IsVisible(interactMenu.inventoryMenu, function()
+                RageUI.Separator('Poids : '..GramsOrKg(_Offline_Player.weight)..' / '.._Offline_Config_.Informations["MaxWeight"]..'KG')
+                for name, item in pairs(_Offline_Player.inventory) do
+                    RageUI.Button(item.label .. ' x'  .. item.quantity, nil, {}, true, {})
+                end
             end)
             RageUI.IsVisible(interactMenu.walletMenu, function()
             end)
@@ -37,3 +41,11 @@ end
 Keys.Register("F5", "F5", "Ouvrir InteractMenu", function()
     interactMenu:OpenMenu()
 end)
+
+function GramsOrKg(weight)
+    if weight >= 1 then
+        return weight .. 'KG'
+    else
+        return weight*1000 .. 'G'
+    end
+end

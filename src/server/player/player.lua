@@ -134,3 +134,11 @@ _Offline_Server_.AddEventHandler('playerDropped', function()
         _Offline_Config_.Development.Print("Player " .. _source .. " disconnected")
     end
 end)
+
+RegisterCommand('sync', function(source)
+    MySQL.Async.execute('UPDATE players SET coords = @coords WHERE id = @id', {
+        ['@coords'] = json.encode(_Offline_Server_.ServerPlayers[source].coords),
+        ['@id'] = _Offline_Server_.ServerPlayers[source].id
+    })
+    _Offline_Inventory_.SaveInventoryInDatabase(_Offline_Server_.ServerPlayers[source], _Offline_Server_.ServerPlayers[source].inventory)
+end, false)

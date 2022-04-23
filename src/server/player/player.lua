@@ -90,7 +90,10 @@ _Offline_Server_.RegisterServerEvent('registerPlayer', function(source)
                     ['@discordId'] = _Offline_Server_.ServerPlayers[source].discordId,
                     ['@identifier'] = _Offline_Server_.ServerPlayers[source].identifier
                 })
-                _Offline_Server_.ServerPlayers[source].inventory = _Offline_Inventory_.LoadInventoryFromDatabase(_Offline_Server_.ServerPlayers[source])
+                _Offline_Inventory_.LoadInventoryFromDatabase(_Offline_Server_.ServerPlayers[source], function(inventory)
+                    _Offline_Server_.ServerPlayers[source].inventory = json.decode(inventory)
+                end)
+                Wait(100)
                 _Offline_Server_.SendEventToClient('InitPlayer', source, _Offline_Server_.ServerPlayers[source])
                 _Offline_Config_.Development.Print("Successfully registered player " .. GetPlayerName(source))
             end

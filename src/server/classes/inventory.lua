@@ -39,15 +39,16 @@ end
 ---LoadInventoryFromDatabase
 ---@type function
 ---@param player table
+---@param cb function
 ---@return table
 ---@public
-_Offline_Inventory_.LoadInventoryFromDatabase = function(player)
+_Offline_Inventory_.LoadInventoryFromDatabase = function(player, cb)
     if not player then return end
     MySQL.Async.fetchAll("SELECT * FROM `inventory` WHERE `identifier` = @identifier", {
         ['@identifier'] = player.identifier
     }, function(result)
         if result[1] then
-            return json.decode(result[1].inventory)
+            cb(result[1].inventory)
         end
     end)
 end

@@ -34,7 +34,8 @@ _Offline_Config_.Informations = {
     ["Version"] = "1.0.0",
     ["Name"] = "Offline V1 Whitelist",
     ["Description"] = "Serveur Roleplay Français",
-    ["Discord"] = "discord.gg/offlinerp"
+    ["Discord"] = "discord.gg/offlinerp",
+    ['MaxWeight'] = 45
 }
 
 ---@type table
@@ -68,6 +69,7 @@ _Offline_Config_.Items = {
             _Offline_Client_.SendEventToServer('player:useItem', 'bread')
         end,
         icon = "bread",
-        type = 'food'
+        type = 'food',
+        weight = 0.01,
     }
 }

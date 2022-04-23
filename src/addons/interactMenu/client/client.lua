@@ -4,6 +4,7 @@ local interactMenu = {
 
 interactMenu.mainMenu = RageUI.CreateMenu("Interact", "Interact Menu")
 interactMenu.inventoryMenu = RageUI.CreateSubMenu(interactMenu.mainMenu, "Inventory", "Inventory Menu")
+interactMenu.walletMenu = RageUI.CreateSubMenu(interactMenu.mainMenu, "Wallet", "Wallet Menu")
 
 interactMenu.mainMenu.Closed = function()
     interactMenu.opened = false
@@ -23,8 +24,11 @@ function interactMenu:OpenMenu()
             Wait(0)
             RageUI.IsVisible(interactMenu.mainMenu, function()
                 RageUI.Button('Inventaire', nil, {}, true, {}, interactMenu.inventoryMenu)
+                RageUI.Button('Porte-feuille', nil, {}, true, {}, interactMenu.walletMenu)
             end)
             RageUI.IsVisible(interactMenu.inventoryMenu, function()
+            end)
+            RageUI.IsVisible(interactMenu.walletMenu, function()
             end)
         end
     end)

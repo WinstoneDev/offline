@@ -3,10 +3,12 @@
 ---@field public SaveInventoryInDatabase function
 ---@field public LoadInventoryFromDatabase function
 ---@field public AddItemInInventory function
+---@field public RemoveItemInInventory function
 ---@field public DoesItemExists function
 ---@field public GetInfosItem function
 ---@field public GetInventoryWeight function
 ---@field public CanCarryItem function
+---@field public RenameItemLabel function
 ---@public
 _Offline_Inventory_ = {}
 
@@ -134,25 +136,21 @@ _Offline_Inventory_.AddItemInInventory = function(player, item, quantity)
     if not quantity then quantity = 1 end
     local inventory = player.inventory
     local found = false
-    for key, value in pairs(inventory) do
-        if value.name == item then
-            if _Offline_Inventory_.CanCarryItem(player, item, quantity) then
-                value.quantity = value.quantity + quantity
-                found = true
-            else
-                return false
-            end
+    if inventory[item] then
+        if _Offline_Inventory_.CanCarryItem(player, item, quantity) then
+            inventory[item].quantity =  inventory[item].quantity + quantity
+            found = true
         end
     end
     local itemC = _Offline_Inventory_.GetInfosItem(item)
     if not found then
         if itemC ~= nil then
             if _Offline_Inventory_.CanCarryItem(player, item, quantity) then
-                table.insert(inventory, {
+                inventory[item] = {
                     name = item,
                     quantity = quantity,
                     label = itemC.initialName
-                })
+                }
             else
                 return false
             end
@@ -165,4 +163,69 @@ _Offline_Inventory_.AddItemInInventory = function(player, item, quantity)
     player.weight = weight
     _Offline_Server_.SendEventToClient('UpdatePlayer', player.source, _Offline_Server_.ServerPlayers[player.source])
     return true
+end
+
+---RemoveInventoryItem
+---@type function
+---@param player table
+---@param item string
+---@param quantity number
+---@return boolean
+---@public
+_Offline_Inventory_.RemoveItemInInventory = function(player, item, quantity)
+    if not player then return end
+    if not item then return end
+    if not quantity then quantity = 1 end
+    local inventory = player.inventory
+    if inventory[item] then
+        if inventory[item].quantity >= quantity then
+            inventory[item].quantity = inventory[item].quantity - quantity
+            if inventory[item].quantity == 0 then
+                table.remove(inventory, key)
+            end
+        else
+            return false
+        end
+    else
+        return false
+    end
+    player.inventory = inventory
+    local weight = _Offline_Inventory_.GetInventoryWeight(player.inventory)
+    player.weight = weight
+    _Offline_Server_.SendEventToClient('UpdatePlayer', player.source, _Offline_Server_.ServerPlayers[player.source])
+    return true
+end
+
+---RenameItemLabel
+---@type function
+---@param player table
+---@param name string
+---@param item string
+---@param label string
+---@param quantity number
+---@return boolean
+---@public
+_Offline_Inventory_.RenameItemLabel = function(player, name, item, label, quantity)
+    if not player then return end
+    if not item then return end
+    if not label then return end
+    local inventory = player.inventory
+    local done = false
+
+    if inventory[name].label == item then
+        if inventory[name].quantity >= quantity then
+            inventory[name].quantity =  inventory[name].quantity - quantity
+            done = true
+            if inventory[name].quantity == 0 then
+                table.remove(inventory, name)
+            end
+        end
+    end
+
+    if done then
+       
+    end
+
+    player.inventory = inventory
+    _Offline_Server_.SendEventToClient('UpdatePlayer', player.source, _Offline_Server_.ServerPlayers[player.source])
 end

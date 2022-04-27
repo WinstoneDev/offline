@@ -70,6 +70,6 @@ _Offline_Config_.Items = {
         end,
         icon = "bread",
         type = 'food',
-        weight = 0.01,
+        weight = 0.01
     }
 }

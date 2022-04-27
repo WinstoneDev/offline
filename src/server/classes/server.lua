@@ -7,7 +7,9 @@
 ---@field public ServerPlayers table
 ---@field public RegisteredZones table
 ---@field public RegisterZone function
----@field public GetEntityCoords function$
+---@field public GetEntityCoords function
+---@field public GetPlayerFromdId function
+---@field public GetPlayerFromdIdentifier function
 ---@public
 _Offline_Server_ = {}
 
@@ -96,3 +98,29 @@ _Offline_Server_.RegisterServerEvent('updateNumberPlayer', function()
     local _source = source
     _Offline_Server_.SendEventToClient('updateNumberPlayer', _source, #_Offline_Server_.ServerPlayers)
 end)
+
+---GetPlayerFromdId
+---@type function
+---@param player number
+---@return table
+---@public
+_Offline_Server_.GetPlayerFromdId = function(player)
+    if not player then return end
+    if _Offline_Server_.ServerPlayers[player] then
+        return _Offline_Server_.ServerPlayers[player]
+    end
+end
+
+---GetPlayerFromdIdentifier
+---@type function
+---@param identifier string
+---@return table
+---@public
+_Offline_Server_.GetPlayerFromdIdentifier = function(identifier)
+    if not identifier then return end
+    for _, player in pairs(_Offline_Server_.ServerPlayers) do
+        if player.identifier == identifier then
+            return player
+        end
+    end
+end

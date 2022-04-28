@@ -47,6 +47,33 @@ _Offline_Client_.SetCoords = function(coords)
     SetEntityCoords(PlayerPedId(), coords.x, coords.y, coords.z)
 end
 
+---KeyboardInput
+---@type function
+---@param title string
+---@param maxLength number
+---@public
+_Offline_Client_.KeyboardInput = function(title, maxLength)
+    if not title then return end
+    if not maxLength then return end
+    AddTextEntry("Message", title)
+    DisplayOnscreenKeyboard(1, "Message", '', '', '', '', '', maxLength)
+    blockinput = true
+    while UpdateOnscreenKeyboard() ~= 1 and UpdateOnscreenKeyboard() ~= 2 do
+        Citizen.Wait(0)
+    end
+
+    if UpdateOnscreenKeyboard() ~= 2 then
+        local result = GetOnscreenKeyboardResult()
+        Citizen.Wait(500)
+        blockinput = false
+        return result
+    else
+        Citizen.Wait(500)
+        blockinput = false
+        return nil
+    end
+end
+
 RegisterCommand('tpm', function()
     local entity = PlayerPedId()
         if IsPedInAnyVehicle(entity, false) then

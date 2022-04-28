@@ -1,12 +1,12 @@
 local interactMenu = {
-    opened = false,
-    selectedItem = nil
+    opened = false
 }
 
 interactMenu.mainMenu = RageUI.CreateMenu("Interact", "Interact Menu")
 interactMenu.inventoryMenu = RageUI.CreateSubMenu(interactMenu.mainMenu, "Inventory", "Inventory Menu")
-interactMenu.inventoryActionsMenu = RageUI.CreateSubMenu(interactMenu.inventoryMenu, "Actions", "Actions Menu")
 interactMenu.walletMenu = RageUI.CreateSubMenu(interactMenu.mainMenu, "Wallet", "Wallet Menu")
+interactMenu.actionItem = RageUI.CreateSubMenu(interactMenu.inventoryMenu, "Inventory", "Inventory Action")
+
 
 interactMenu.mainMenu.Closed = function()
     interactMenu.opened = false
@@ -31,26 +31,37 @@ function interactMenu:OpenMenu()
             RageUI.IsVisible(interactMenu.inventoryMenu, function()
                 RageUI.Separator('Poids : '..GramsOrKg(_Offline_Player.weight)..' / '.._Offline_Config_.Informations["MaxWeight"]..'KG')
                 for name, item in pairs(_Offline_Player.inventory) do
-                    RageUI.Button(item.label .. ' x'  .. item.quantity, nil, {}, true, {
+                    RageUI.Button(item.label..' x'..math.floor(item.count), nil, {}, true, {
                         onSelected = function()
-                            interactMenu.selectedItem = item
-                            RageUI.Visible(interactMenu.inventoryActionsMenu, true)
+                            interactMenu.Item = item.name
+                            interactMenu.Label = item.label
+                            Wait(150)
+                            RageUI.CloseAll()
+                            RageUI.Visible(interactMenu.actionItem, true)
                         end
                     })
                 end
             end)
             RageUI.IsVisible(interactMenu.walletMenu, function()
             end)
-            RageUI.IsVisible(interactMenu.inventoryActionsMenu, function()
-                RageUI.Button('Renommer', 'Renommer l\'item '..interactMenu.selectedItem.label, {RightLabel = "→"}, true, {
+            RageUI.IsVisible(interactMenu.actionItem, function()
+                RageUI.Button("Utiliser", nil, {}, true, {})
+                RageUI.Button("Donner", nil, {}, true, {})
+                RageUI.Button("Rename", nil, {}, true, {
                     onSelected = function()
-                        local label = _Offline_Client_.KeyboardInput('Nom', 10)
-                        local quantity = _Offline_Client_.KeyboardInput('Quantité', 10)
-                        if label and label ~= nil and quantity and quantity ~= nil then
-                            _Offline_Client_.SendEventToServer('Inventory:RenameItem', interactMenu.selectedItem.name, interactMenu.selectedItem.label, label, tonumber(quantity))
+                        local result = _Offline_Client_.KeyboardInput("Label", 30)
+                        if result ~= nil and #result > 2 then
+                            _Offline_Client_.SendEventToServer('renameItemPlayer', GetPlayerServerId(PlayerId()), interactMenu.Item, interactMenu.Label, result, 1)
                             RageUI.GoBack()
-                        else
-                            TriggerEvent("WaveNotify","error", "Veuillez réessayer", "Erreur rencontrée","Erreur")
+                        end
+                    end
+                })
+                RageUI.Button("Jeter", nil, {}, true, {
+                    onSelected = function()
+                        local result = _Offline_Client_.KeyboardInput("Montant", 30)
+                        if result ~= nil and tonumber(result) then
+                            _Offline_Client_.SendEventToServer('removeItemPlayer', GetPlayerServerId(PlayerId()), interactMenu.Item, result, interactMenu.Label)
+                            RageUI.GoBack()
                         end
                     end
                 })

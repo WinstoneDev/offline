@@ -56,7 +56,7 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `identifier`, `inventory`) VALUES
-(1, 'license:a32f25553f22215bd8f6bc3402b039dcf8c5386d', '[{\"label\":\"Pain\",\"quantity\":1,\"name\":\"bread\"}]');
+(1, 'license:9aee5b5fed69441fa643f9db5ff2ddc5057745f0', '[]');
 
 -- --------------------------------------------------------
 

@@ -2,32 +2,40 @@ fx_version 'adamant'
 game 'gta5'
 
 client_scripts {
-    'src/client/classes/*.lua',
-    "src/dependencies/RageUI/RMenu.lua",
-    "src/dependencies/RageUI/menu/RageUI.lua",
-    "src/dependencies/RageUI/menu/Menu.lua",
-    "src/dependencies/RageUI/menu/MenuController.lua",
-    "src/dependencies/RageUI/components/*.lua",
-    "src/dependencies/RageUI/menu/elements/*.lua",
-    "src/dependencies/RageUI/menu/items/*.lua",
-    "src/dependencies/RageUI/menu/panels/*.lua",
-    "src/dependencies/RageUI/menu/windows/*.lua",
-    'src/dependencies/map/client.lua',
-    'src/client/utils/*.lua',
-    'src/client/player/*.lua',
-    'src/addons/interactMenu/client/*.lua'
+	'dependencies/RageUI/RMenu.lua',
+    'dependencies/RageUI/menu/RageUI.lua',
+    'dependencies/RageUI/menu/Menu.lua',
+    'dependencies/RageUI/menu/MenuController.lua',
+    'dependencies/RageUI/components/*.lua',
+    'dependencies/RageUI/menu/elements/*.lua',
+    'dependencies/RageUI/menu/items/*.lua',
+    'dependencies/RageUI/menu/panels/*.lua',
+    'dependencies/RageUI/menu/windows/*.lua',
+
+    'client/function.lua',
+    'client/zones.lua',
+    'client/richpresence.lua',
+    'client/command.lua',
+    'client/player/player.lua',
+    'client/player/spawn.lua',
+    'client/player/pickup.lua',
+
+    'module/interaction/cl_interact.lua'
 }
 
 shared_scripts {
-    'src/shared/*.lua',
-    "src/dependencies/map/shared.lua",
-    'src/addons/../shared/*.lua'
+    'shared/*.lua',
 }
 
 server_scripts {
     '@mysql-async/lib/MySQL.lua',
-    'src/dependencies/map/server.lua',
-    'src/server/classes/*.lua',
-    'src/server/player/*.lua',
-    'src/addons/interactMenu/server/*.lua'
+    'server/*.lua',
+    'server/player/*.lua',
+    
+    'module/interaction/sv_interact.lua'
+}
+
+exports {
+    "GetPlayerInventoryItems",
+    "GetPlayerInventoryWeight",
 }

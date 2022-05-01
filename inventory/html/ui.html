@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>offline</title>
+    <link href="https://fonts.googleapis.com/css?family=Signika" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/ui.css">
+</head>
+
+<body>
+    <script src="locales/en.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="js/inventory.js"></script>
+
+    <div class="ui">
+
+        <div class="inventory">
+            <div id="weight" class="text-xs self-end"></div>
+            <div id="playerInventory">
+            </div>
+
+            <div id="playerInventoryFastItems">
+            </div>
+
+            <div id="controls">
+                <div class="weight-div"></div>
+                <div class="controls-div">
+                    <input type="number" class="control" id="count" value="1">
+                    <div class="control" id="use"></div>
+                    <div class="control" id="rename"></div>
+                    <div class="control" id="give"></div>
+                    <div class="control" id="drop"></div>
+
+                    <div id="controlrename">
+
+                    </div>
+                </div class="controltodown">
+            </div>
+
+            <div id="otherInventory">
+                <div id="noSecondInventoryMessage">
+                </div>
+            </div>
+            <div style="width: 100%;bottom: 0;top: auto;">
+                <span align="left" class="info-div2" style="float: left;"></span>
+                <span align="right" class="info-div" style="float: right;"></span>
+            </div>
+        </div>
+        <div class="raccours">
+            <div class="raccours1">Inventaire</div>
+            <div class="raccours11">|</div>
+            <div class="raccours2">Vêtements</div>
+        </div>
+    </div>
+</body>
+
+<script>
+    $(document).ready(function() {
+
+        $("#use").html(invLocale.useItem);
+        $("#rename").html(invLocale.renameItem);
+        $("#give").html(invLocale.giveItem);
+        $("#drop").html(invLocale.dropItem);
+    });
+</script>
+
+</html>

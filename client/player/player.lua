@@ -16,6 +16,14 @@ function GetPlayerInventoryWeight()
     return Offline.PlayerData.weight or 0
 end
 
+function GetOriginalLabel(item)
+    if Config.Items[item] then
+        return Config.Items[item].label
+    else
+        return nil
+    end
+end
+
 CreateThread( function()
     while true do
        Citizen.Wait(0)

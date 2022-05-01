@@ -28,9 +28,12 @@ local function GetPlayerIndentifier(source)
     return identifier
 end
 
-Offline.RegisterServerEvent('registerPlayer', function()
+RegisterNetEvent("registerPlayer")
+AddEventHandler("registerPlayer", function()
     local source = source
+
     if not Offline.ServerPlayers[source] then
+        Offline.addTokenToClient(source)
         MySQL.Async.fetchAll('SELECT * FROM players WHERE identifier = @identifier', {
             ['@identifier'] = GetPlayerIndentifier(source)
         }, function(result)
@@ -42,12 +45,15 @@ Offline.RegisterServerEvent('registerPlayer', function()
                     discordId = GetPlayerDiscord(source),
                     source = source,
                     token = GetPlayerToken(source),
-                    characterInfos = {},
+                    characterInfos = {Sexe = "Aucun", LDN = "Aucun", Prenom = "Aucun", NDF = "Aucun", Taille = 180, DDN = "19/04/1999"},
                     inventory = {},
                     currentZone = "Aucune",
                     coords = vector3(0, 0, 0),
                     weight = Offline.Inventory.GetInventoryWeight({}) or 0,
-                    healt = 200
+                    healt = 200,
+                    skin = nil,
+                    cash = Config.Informations["StartMoney"].cash,
+                    dirty = Config.Informations["StartMoney"].dirty,
                 }
                 MySQL.Async.execute('INSERT INTO players (identifier, discordId, token, characterInfos, coords) VALUES(@identifier, @discordId, @token, @characterInfos, @coords)', {
                     ['@identifier'] = Offline.ServerPlayers[source].identifier,
@@ -73,12 +79,15 @@ Offline.RegisterServerEvent('registerPlayer', function()
                     discordId = GetPlayerDiscord(source),
                     source = source,
                     token = GetPlayerToken(source),
-                    characterInfos = {},
+                    characterInfos = json.decode(result[1].characterInfos),
                     inventory = json.decode(result[1].inventory),
                     currentZone = "Aucune",
                     coords = json.decode(result[1].coords),
                     weight = 0,
-                    health = result[1].health
+                    health = result[1].health,
+                    skin = json.decode(result[1].skin),
+                    cash = json.decode(result[1].money).cash,
+                    dirty = json.decode(result[1].money).dirty
                 }
                 MySQL.Async.execute('UPDATE players SET token = @token, discordId = @discordId WHERE identifier = @identifier', {
                     ['@token'] = Offline.ServerPlayers[source].token,
@@ -96,6 +105,7 @@ Offline.RegisterServerEvent('registerPlayer', function()
         Offline.SendEventToClient('zones:registerBlips', source, Offline.RegisteredZones)
     else
         Config.Development.Print("Player " .. source .. " already registered")
+        DropPlayer(source, "Player " .. source .. " already registered ╭∩╮（︶_︶）╭∩╮")
     end
 end)
 
@@ -115,9 +125,10 @@ end)
 Offline.AddEventHandler('playerDropped', function()
     local _source = source
     if Offline.ServerPlayers[_source] then
-        MySQL.Async.execute('UPDATE players SET coords = @coords, inventory = @inventory, health = @health WHERE id = @id', {
+        MySQL.Async.execute('UPDATE players SET coords = @coords, inventory = @inventory, money = @money, health = @health WHERE id = @id', {
             ['@coords'] = json.encode(Offline.ServerPlayers[_source].coords),
             ['@inventory'] = json.encode(Offline.ServerPlayers[_source].inventory),
+            ['@money'] = json.encode({cash = Offline.ServerPlayers[_source].cash, dirty = Offline.ServerPlayers[_source].dirty}),
             ['@id'] = Offline.ServerPlayers[_source].id,
             ['@health'] = GetEntityHealth(GetPlayerPed(source))
         })
@@ -127,9 +138,10 @@ Offline.AddEventHandler('playerDropped', function()
 end)
 
 RegisterCommand('sync', function(source)
-    MySQL.Async.execute('UPDATE players SET coords = @coords, inventory = @inventory, health = @health WHERE id = @id', {
+    MySQL.Async.execute('UPDATE players SET coords = @coords, inventory = @inventory, money = @money, health = @health WHERE id = @id', {
         ['@coords'] = json.encode(Offline.ServerPlayers[source].coords),
         ['@inventory'] = json.encode(Offline.ServerPlayers[source].inventory),
+        ['@money'] = json.encode({cash = Offline.ServerPlayers[source].cash, dirty = Offline.ServerPlayers[source].dirty}),
         ['@id'] = Offline.ServerPlayers[source].id,
         ['@health'] = GetEntityHealth(GetPlayerPed(source))
     })

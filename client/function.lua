@@ -1,5 +1,7 @@
 Offline = {}
 Offline.RegisteredClientEvents = {}
+Offline.Token = {}
+Offline.Math = {}
 
 Offline.TriggerLocalEvent = function(name, ...)
     if not name then return end
@@ -12,7 +14,15 @@ Offline.RegisterClientEvent = function(name, execute)
     if not Offline.RegisteredClientEvents[name] then
         RegisterNetEvent(name)
         AddEventHandler(name, function(...)
-            execute(...)
+           local getResource = GetInvokingResource()
+
+           if Config.ResourcesClientEvent[getResource] then
+                execute(...)
+           elseif getResource == nil then
+                execute(...)
+            else
+               Offline.SendEventToServer("DropInjectorDetected")
+            end
         end)
         Config.Development.Print("Successfully registered event " .. name)
         Offline.RegisteredClientEvents[name] = execute
@@ -21,8 +31,8 @@ Offline.RegisterClientEvent = function(name, execute)
     end
 end
 
-Offline.RegisterClientEvent('getSharedObject', function(cb)
-    cb(Offline)
+Offline.RegisterClientEvent("offline:addTokenEvent", function(data)
+    Offline.Token = data
 end)
 
 Offline.AddEventHandler = function(name, execute)
@@ -34,10 +44,15 @@ Offline.AddEventHandler = function(name, execute)
     Config.Development.Print("Successfully added event " .. name)
 end
 
-Offline.SendEventToServer = function(name, ...)
-    if not name then return end
-    TriggerServerEvent(name, ...)
-    Config.Development.Print("Successfully triggered server event " .. name)
+Offline.SendEventToServer = function(eventName, ...)
+    local resourceName = GetCurrentResourceName()
+
+    if Offline.Token[resourceName] then
+        tokenEvent = Offline.Token[resourceName]
+        TriggerServerEvent('offline:useEvent', eventName, tokenEvent, ...)
+    else
+        Config.Development.Print("Injector detected " .. eventName)
+    end
 end
 
 Offline.KeyboardInput = function(textEntry, maxLength)
@@ -85,13 +100,14 @@ Offline.DrawText3D = function(x, y, z, text, distance, v3)
     ClearDrawOrigin()
 end
 
-Offline.AddBlip = function(blipName, blipSprite, blipColor, coords)
+Offline.AddBlip = function(blipName, blipSprite, blipColor, blipScale, coords)
     if not blipName then return end
     if not blipSprite then return end
     if not blipColor then return end
     if not coords then return end
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     SetBlipSprite(blip, blipSprite)
+    SetBlipScale(blip, blipScale)
     SetBlipColour(blip, blipColor)
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
@@ -157,3 +173,56 @@ end
 Offline.RegisterClientEvent('offline:notify', function(message)
     Offline.ShowNotification(message)
 end)
+
+Offline.Math.Round = function(value, numDecimalPlaces)
+    if numDecimalPlaces then
+        local power = 10^numDecimalPlaces
+        return math.floor((value * power) + 0.5) / (power)
+    else
+        return math.floor(value + 0.5)
+    end
+end
+
+Offline.DisplayInteract = function(text, init)
+    SetTextComponentFormat("jamyfafi")
+    AddTextComponentString(text)
+    DisplayHelpTextFromStringLabel(0, 0, init, -1)
+end
+
+Offline.SpawnPed = function(hash, coords, anim)
+    RequestModel(hash)
+    while not HasModelLoaded(hash) do
+        Wait(5)
+    end
+    local ped = CreatePed(4, hash, coords, false, false)
+    SetEntityAsMissionEntity(ped, true, true)
+    SetPedHearingRange(ped, 0.0)
+    SetPedSeeingRange(ped, 0.0)
+    SetEntityInvincible(ped, true)
+    SetPedAlertness(ped, 0.0)
+    FreezeEntityPosition(ped, true) 
+    SetPedFleeAttributes(ped, 0, 0)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    SetPedCombatAttributes(ped, 46, true)
+    SetPedFleeAttributes(ped, 0, 0)
+    if anim ~= nil then
+        TaskStartScenarioInPlace(ped, anim, 0, 0)
+    end
+    return ped
+end
+
+Offline.ConverToBoolean = function(number)
+    if number == 0 then
+        return false
+    elseif number == 1 then
+        return true
+    end
+end
+
+Offline.ConverToNumber = function(boolean)
+    if boolean == false then
+        return 0
+    elseif boolean == true then
+        return 1
+    end
+end

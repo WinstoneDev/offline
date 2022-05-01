@@ -1,5 +1,31 @@
 Offline.Inventory = {}
 Offline.Inventory.ActionItems = {}
+Offline.ItemsId = {}
+
+MySQL.ready(function()
+    MySQL.Async.fetchAll('SELECT inventory FROM players', {}, function(result)
+        for k, v in pairs(result) do
+            local inventory = json.decode(v.inventory)
+
+            for key, value in pairs(inventory) do
+                if value.uniqueId then
+                    Offline.ItemsId[value.uniqueId] = value.uniqueId
+                end
+            end
+        end
+    end)
+end)
+
+Offline.Inventory.GiveUniqueId = function()
+    local uniqueId = math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)
+
+    if not Offline.ItemsId[uniqueId] then
+        Offline.ItemsId[uniqueId] = uniqueId
+        return uniqueId
+    else
+        Offline.Inventory.GiveUniqueId()
+    end
+end
 
 Offline.Inventory.GetAllItems = function()
     local items = {}
@@ -40,16 +66,18 @@ end
 Offline.Inventory.GetInventoryItem = function(player, item)
     if not item then return end
     local count = 0
+    local data = nil
 
     local inventory = player.inventory
 
     for key, value in pairs(inventory) do
         if value.name == item then
             count = count + value.count
+            data = value
         end
     end
     if count ~= 0 then
-        return {count = count, label = Config.Items[item].label}
+        return {count = count, label = Config.Items[item].label, uniqueId = data.uniqueId}
     else
         return nil
     end
@@ -69,7 +97,7 @@ Offline.Inventory.CanCarryItem = function(player, item, quantity)
     end
 end
 
-Offline.Inventory.AddItemInInventory = function(player, item, quantity, newlabel)
+Offline.Inventory.AddItemInInventory = function(player, item, quantity, newlabel, uniqueId)
     if not player then return end
     if not item then return end
     if not quantity then return end
@@ -80,25 +108,31 @@ Offline.Inventory.AddItemInInventory = function(player, item, quantity, newlabel
             local inventory = player.inventory
             local Itemlabel = newlabel or Config.Items[item].label
 
-            if json.encode(inventory) == "[]" then
-                table.insert(inventory, {name = item, label = Itemlabel, count = quantity})
-            else
-                for k, v in pairs(inventory) do
+            for k, v in pairs(inventory) do
+                if not Config.InsertItems[v.name] then
                     if v.name == item and v.label == Itemlabel then
                         v.count = v.count + quantity
                         exist = true
                         break
                     end
                 end
+            end
 
-                if not exist then
+            if not exist then
+                if Config.InsertItems[item] then
+                    if uniqueId == nil then
+                        uniqueId = Offline.Inventory.GiveUniqueId()
+                    end
+                    table.insert(inventory, {uniqueId = uniqueId, name = item, label = Itemlabel, count = quantity})
+                else
                     table.insert(inventory, {name = item, label = Itemlabel, count = quantity})
                 end
             end
+
             player.inventory = inventory
             local weight = Offline.Inventory.GetInventoryWeight(player.inventory)
             player.weight = weight
-            Offline.SendEventToClient('UpdatePlayer', player.source, Offline.ServerPlayers[player.source])
+            Offline.SendEventToClient('UpdatePlayer', player.source, player)
         end
     end
 end
@@ -145,10 +179,10 @@ Offline.Inventory.RemoveItemInInventory = function(player, item, quantity, itemL
     player.inventory = inventory
     local weight = Offline.Inventory.GetInventoryWeight(player.inventory)
     player.weight = weight
-    Offline.SendEventToClient('UpdatePlayer', player.source, Offline.ServerPlayers[player.source])
+    Offline.SendEventToClient('UpdatePlayer', player.source, player)
 end
 
-Offline.Inventory.RenameItemLabel = function(player, name, lastLabel, newLabel, quantity)
+Offline.Inventory.RenameItemLabel = function(player, name, lastLabel, newLabel, quantity, uniqueId)
     if not player then return end
     if not name then return end
     if not lastLabel then return end
@@ -159,67 +193,65 @@ Offline.Inventory.RenameItemLabel = function(player, name, lastLabel, newLabel, 
     local inventory = player.inventory
     local exist = false
     local itemName = nil
-    
-    for k, v in pairs(inventory) do
-        if v.name == name and v.label == lastLabel then
-            if tonumber(v.count) >= tonumber(quantity) then
-                itemName = v.name
-                v.count = v.count - quantity
-                if v.count <= 0 then
-                    table.remove(inventory, k)
-                end
 
-                for key, value in pairs(inventory) do
-                    if value.name == itemName and value.label == newLabel then
-                        value.count = value.count + quantity
-                        exist = true
-                        break
-                    end
-                end
-            else
+    if Config.InsertItems[name] then
+        for k, v in pairs(inventory) do
+            if v.uniqueId == uniqueId then
+                v.label = newLabel
+                exist = true
                 break
             end
         end
-    end
-    if itemName ~= nil then
-        if not exist then
-            table.insert(inventory, {name = itemName, label = newLabel, count = quantity})
+    else
+        for k, v in pairs(inventory) do
+            if v.name == name and v.label == lastLabel then
+                if tonumber(v.count) >= tonumber(quantity) then
+                    itemName = v.name
+                    v.count = v.count - quantity
+                    if v.count <= 0 then
+                        table.remove(inventory, k)
+                    end
+
+                    for key, value in pairs(inventory) do
+                        if value.name == itemName and value.label == newLabel then
+                            value.count = value.count + quantity
+                            exist = true
+                            break
+                        end
+                    end
+                else
+                    break
+                end
+            end
         end
-        player.inventory = inventory
-        Offline.SendEventToClient('UpdatePlayer', player.source, Offline.ServerPlayers[player.source])
     end
+
+    if not exist then
+        table.insert(inventory, {name = itemName, label = newLabel, count = quantity})
+    end
+    Offline.SendEventToClient('offline:notify', player.source, "Vous avez changé le nom ~b~"..lastLabel.."~s~ en ~b~"..newLabel.."~s~.")
+    player.inventory = inventory
+    Offline.SendEventToClient('UpdatePlayer', player.source, player)
 end
 
 Offline.RegisterUsableItem = function(item, cb)
 	Offline.Inventory.ActionItems[item] = cb
 end
 
-Offline.UseItem = function(source, item, ...)
+Offline.UseItem = function(item, ...)
     if Offline.Inventory.ActionItems[item] then
-	    Offline.Inventory.ActionItems[item](source, ...)
+	    Offline.Inventory.ActionItems[item](...)
     end
 end
 
-Offline.RegisterUsableItem('bread', function(source, args)
-    if args ~= nil then
-        print('source : ('..source..')')
-        print('args 1 : '..args)
-        Offline.Inventory.RemoveItemInInventory(Offline.ServerPlayers[source], 'bread', 1)
-    end
-end)
-
-Offline.RegisterServerEvent('offline:renameItem', function(name, lastLabel, newLabel, quantity)
-    Offline.Inventory.RenameItemLabel(Offline.ServerPlayers[source], name, lastLabel, newLabel, quantity)
-end)
-
-Offline.RegisterServerEvent('offline:removeItem', function(item, quantity, itemLabel)
-    Offline.Inventory.RemoveItemInInventory(Offline.ServerPlayers[source], item, quantity, itemLabel)
+Offline.RegisterServerEvent('offline:renameItem', function(name, lastLabel, newLabel, quantity, uniqueId)
+    Offline.Inventory.RenameItemLabel(Offline.ServerPlayers[source], name, lastLabel, newLabel, quantity, uniqueId)
 end)
 
 Offline.RegisterServerEvent('offline:useItem', function(item, ...)
     if Offline.Inventory.GetInventoryItem(Offline.ServerPlayers[source], item) ~= nil then
         if Offline.Inventory.GetInventoryItem(Offline.ServerPlayers[source], item).count > 0 then
-            Offline.UseItem(source, item, ...)
+            Offline.UseItem(item, ...)
         end
     end
 end)
@@ -233,7 +265,9 @@ Offline.RegisterServerEvent('offline:transfer', function(table)
             if Offline.Inventory.GetInventoryItem(Offline.ServerPlayers[source], table.name).count >= table.count then
                 if Offline.Inventory.CanCarryItem(Offline.ServerPlayers[table.target], table.name, table.count) then
                     Offline.Inventory.RemoveItemInInventory(Offline.ServerPlayers[source], table.name, table.count, table.label)
-                    Offline.Inventory.AddItemInInventory(Offline.ServerPlayers[table.target], table.name, table.count, table.label)
+                    Offline.Inventory.AddItemInInventory(Offline.ServerPlayers[table.target], table.name, table.count, table.label, table.uniqueId)
+                    Offline.SendEventToClient('offline:notify', table.target,  table.count..' '..table.label..' ont été ~g~ajouté(s)~s~ à votre inventaire.')
+                    Offline.SendEventToClient('offline:notify', source, table.count..' '..table.label..' ont été ~r~retiré(s)~s~ à votre inventaire.')
                 else
                     Offline.SendEventToClient('offline:notify', table.target, '~r~Vous ne pouvez pas transporter cet objet.')
                     Offline.SendEventToClient('offline:notify', source, '~r~La personne ne peut pas transporter cet objet.')

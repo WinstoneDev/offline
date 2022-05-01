@@ -1,6 +1,6 @@
 Offline.RegisteredZones = {}
 
-Offline.RegisterZone = function(name, coords, interactFunc, drawDist, drawMarker, markerInfos, drawBlip, blipInfos, drawNotification, notificationInfos)
+Offline.RegisterZone = function(name, coords, interactFunc, drawDist, drawMarker, markerInfos, drawBlip, blipInfos, drawNotification, notificationInfos, drawPed, pedInfos)
     if not name then return end
     if not coords then return end
     if not interactFunc then return end
@@ -16,7 +16,9 @@ Offline.RegisterZone = function(name, coords, interactFunc, drawDist, drawMarker
             drawBlip = drawBlip,
             blipInfos = blipInfos,
             drawNotification = drawNotification,
-            notificationInfos = notificationInfos
+            notificationInfos = notificationInfos,
+            drawPed = drawPed,
+            pedInfos = pedInfos
         }
         Config.Development.Print("Successfully registered zone " .. name)
     else
@@ -33,6 +35,12 @@ Offline.RegisterServerEvent('zones:haveInteract', function(zone)
     end)
 end)
 
+Offline.RegisterServerEvent('offline:haveExitedZone', function()
+    local _src = source
+    local player = Offline.ServerPlayers[_src]
+    player.currentZone = "Aucune"
+end)
+
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
@@ -45,8 +53,6 @@ Citizen.CreateThread(function()
                         Offline.SendEventToClient('zones:enteredZone', player.source, zone)
                         player.currentZone = name
                     end
-                else
-                    player.currentZone = "Aucune"
                 end
             end
         end

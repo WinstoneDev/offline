@@ -1,6 +1,7 @@
-local getNumberForFirstTime = false
+local CountPlayers = nil
+
 Offline.RegisterClientEvent('updateNumberPlayer', function(number)
-    players = number
+    CountPlayers = number
     getNumberForFirstTime = true
 end)
 
@@ -9,8 +10,8 @@ Citizen.CreateThread(function()
     Offline.SendEventToServer('updateNumberPlayer')
 	while true do
         local time = 0 
-        if getNumberForFirstTime then
-            time = 30000
+        if CountPlayers ~= nil then
+            time = 20000
             Offline.SendEventToServer('updateNumberPlayer')
             SetDiscordAppId(Config.DiscordStatus["ID"])
             SetDiscordRichPresenceAsset(Config.DiscordStatus["LargeIcon"])
@@ -19,7 +20,7 @@ Citizen.CreateThread(function()
             SetDiscordRichPresenceAssetSmallText(Config.DiscordStatus["SmallIconText"])
             SetDiscordRichPresenceAction(0, "Discord", Config.Informations["Discord"])
             SetDiscordRichPresenceAction(1, "Se connecter", "fivem://connect/play.offlinerp.fr")
-            SetRichPresence("Offline Whitelist V1\n"..GetPlayerName(PlayerId()) .. " - ".. players .. "/1024")
+            SetRichPresence("Offline Whitelist V1\n"..GetPlayerName(PlayerId()) .. " - ".. CountPlayers .. "/1024")
         end
         Wait(time)
 	end

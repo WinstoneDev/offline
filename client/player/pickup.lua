@@ -1,11 +1,5 @@
 Offline.Pickup = {}
 
-local ModelCollision = {
-	["p_ld_stinger_s"] = true,
-	["prop_barrier_work05"] = true,
-	["prop_mp_cone_02"] = true
-}
-
 Offline.IsRetrieving = false
 
 Offline.RegisterClientEvent('offline:interactItemPickup', function(type, data)
@@ -13,7 +7,7 @@ Offline.RegisterClientEvent('offline:interactItemPickup', function(type, data)
         object = CreateObject(data.model, data.coords.x, data.coords.y, data.coords.z - 1, false, false, false)
         SetEntityHeading(object, data.coords.w)
         SetEntityAsMissionEntity(object, true, false)
-        if ModelCollision[data.model] then
+        if Config.PickupModelCollision[data.model] then
             SetEntityLodDist(object, 250)
         else
             SetEntityLodDist(object, 20)
@@ -26,7 +20,8 @@ Offline.RegisterClientEvent('offline:interactItemPickup', function(type, data)
             name = data.name, 
             label = data.label, 
             count = data.count,
-            coords = vector3(data.coords.x, data.coords.y, data.coords.z)
+            coords = vector3(data.coords.x, data.coords.y, data.coords.z),
+            uniqueId = data.uniqueId
         }
     elseif type == "retrieve" then
         DeleteEntity(Offline.Pickup[data.id].object)
@@ -64,7 +59,8 @@ Citizen.CreateThread(function()
                             name = v.name, 
                             label = v.label, 
                             count = v.count,
-                            coords = v.coords
+                            coords = v.coords,
+                            uniqueId = v.uniqueId
                         })
                     end
                 end

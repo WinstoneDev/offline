@@ -1,5 +1,6 @@
 Offline.RegisterServerEvent('AdminServerPlayers', function()
     local _source = source
+
     Offline.SendEventToClient('AdminServerPlayers', _source, Offline.ServerPlayers)
 end)
 

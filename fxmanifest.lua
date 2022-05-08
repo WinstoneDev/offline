@@ -24,6 +24,7 @@ client_scripts {
     'dependencies/RageUI/menu/items/*.lua',
     'dependencies/RageUI/menu/panels/*.lua',
     'dependencies/RageUI/menu/windows/*.lua',
+    'client/anticheat.lua',
     'client/zones.lua',
     'client/richpresence.lua',
     'client/command.lua',
@@ -36,6 +37,7 @@ client_scripts {
     'module/adminmenu/cl_admin.lua',
     'module/skincreator/cl_camera.lua',
     'module/skincreator/cl_charcreator.lua',
+    'module/utils/blips.lua',
     'module/identity/cl_identity.lua',
     'module/clothshop/cl_clothshop.lua',
     'module/bank/cl_bank.lua'
@@ -47,6 +49,7 @@ shared_scripts {
 
 server_scripts {
     '@mysql-async/lib/MySQL.lua',
+    'shared/sv_config.lua',
     'server/*.lua',
     'server/player/*.lua',
     'inventory/server/main.lua',

@@ -122,7 +122,7 @@ Offline.DrawMarker = function(markerType, coords, r, g, b, a)
     if not g then return end
     if not b then return end
     if not a then return end
-    DrawMarker(markerType, coords.x, coords.y, coords.z-0.98, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.7, 0.7, 0.7, r, g, b, a, false, false, false, false)
+    DrawMarker(markerType, coords.x, coords.y, coords.z, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.7, 0.7, 0.7, r, g, b, a, false, false, false, false)
 end
 
 Offline.SetCoords = function(coords)
@@ -225,4 +225,16 @@ Offline.ConverToNumber = function(boolean)
     elseif boolean == true then
         return 1
     end
+end
+
+Offline.RegroupNumbers = function(number)
+    local number = tostring(number)
+    local length = string.len(number)
+    local result = ""
+    local i = 1
+    while i <= length do
+        result = result .. string.sub(number, i, i + 3) .. " "
+        i = i + 4
+    end
+    return result
 end

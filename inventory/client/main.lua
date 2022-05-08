@@ -9,6 +9,14 @@ end
 
 local FastWeapons = GetFieldValueFromName('Offline')
 local currentMenu = 'items'
+local ItemVetement = {
+    ['tshirt'] = {15, 0},
+    ['pants'] = {14, 0},
+    ['shoes'] = {34, 0},
+    ['helmet'] ={-1, 0},
+    ['glasses'] = {-1, 0},
+    ['chain'] = {-1, 0},
+}
 
 function DisableControlInventory()
     Citizen.CreateThread(function()
@@ -86,7 +94,8 @@ RegisterNUICallback("GetNearPlayers", function(data, cb)
                 count = data.number,
                 label = data.item.label,
                 target = GetPlayerServerId(target),
-                uniqueId = data.item.uniqueId
+                uniqueId = data.item.uniqueId,
+                data = data.item.data
             })
             Offline.RequestAnimDict("mp_common", function()
                 TaskPlayAnim(PlayerPedId(), "mp_common", "givetake2_a", 2.0, -2.0, 2500, 49, 0, false, false, false)
@@ -144,18 +153,18 @@ end)
 
 local currentWeapon = nil
 
-Citizen.CreateThread(function()
-    while true do
-        local weaponSelected = GetSelectedPedWeapon(PlayerPedId())
+-- Citizen.CreateThread(function()
+--     while true do
+--         local weaponSelected = GetSelectedPedWeapon(PlayerPedId())
 
-        if weaponSelected ~= GetHashKey("weapon_unarmed") then
-            if currentWeapon == nil then
-                RemoveAllPedWeapons(PlayerPedId(), false)
-            end
-        end
-        Wait(1000)
-    end
-end)
+--         if weaponSelected ~= GetHashKey("weapon_unarmed") then
+--             if currentWeapon == nil then
+--                 RemoveAllPedWeapons(PlayerPedId(), false)
+--             end
+--         end
+--         Wait(1000)
+--     end
+-- end)
 
 function useWeapon(name, label)
     if currentWeapon == name then
@@ -174,15 +183,35 @@ function useWeapon(name, label)
 end
 
 RegisterNUICallback("UseItem", function(data, cb)
+    if data.item.name == 'carte' then
+        closeInventory()
+    end
     if data.item.type == "item_standard" then
         if string.match(data.item.name, "weapon_") then
             useWeapon(data.item.name, data.item.label)
         else
-            if data.item.uniqueId ~= nil then
-                if ItemVetement[data.item.name] then
-                    print('ok')
+            if data.item.data ~= nil then
+                local clothes = ItemVetement[data.item.name]
+                if clothes then
+                    TriggerEvent('skinchanger:getSkin', function(skin)
+                        skins = {}
+                        skins["tshirt"] = {skin.tshirt_1, skin.tshirt_2}
+                        skins["pants"] = {skin.pants_1, skin.pants_2}
+                        skins["shoes"] = {skin.shoes_1, skin.shoes_2}
+                        skins["helmet"] = {skin.helmet_1, skin.helmet_2}
+                        skins["glasses"] = {skin.glasses_1, skin.glasses_2}
+                        skins["chain"] = {skin.chain_1, skin.chain_2}
+                    end)
+
+                    if skins[data.item.name][1] ~= data.item.data[1] or skins[data.item.name][2] ~= data.item.data[2] then
+                        Offline.TriggerLocalEvent('skinchanger:change', data.item.name..'_1', data.item.data[1])
+                        Offline.TriggerLocalEvent('skinchanger:change', data.item.name..'_2', data.item.data[2])
+                    else
+                        Offline.TriggerLocalEvent('skinchanger:change', data.item.name..'_1', clothes[1])
+                        Offline.TriggerLocalEvent('skinchanger:change', data.item.name..'_2', clothes[2])
+                    end
                 else
-                    Offline.SendEventToServer('offline:useItem', data.item.name, data.item.uniqueId)
+                    Offline.SendEventToServer('offline:useItem', data.item.name, data.item.data)
                 end
             else
                 Offline.SendEventToServer('offline:useItem', data.item.name)
@@ -202,7 +231,16 @@ RegisterNUICallback("DropItem", function(data, cb)
         local pHeading = GetEntityHeading(pPed)
         
         if tonumber(data.number) then
-            Offline.SendEventToServer('offline:addItemPickup', data.item.name, data.item.label, data.number, {x = pCoords.x, y = pCoords.y, z = pCoords.z, w = pHeading}, data.item.uniqueId)
+            Offline.SendEventToServer('offline:addItemPickup', data.item.name, data.item.type, data.item.label, data.number, {x = pCoords.x, y = pCoords.y, z = pCoords.z, w = pHeading}, data.item.uniqueId, data.item.data)
+            TaskPlayAnim(PlayerPedId(), "random@domestic", "pickup_low" , 8.0, -8.0, 1780, 35, 0.0, false, false, false)
+        end
+    elseif data.item.type ~= 'item_standard' then
+        local pPed = PlayerPedId()
+        local pCoords = GetEntityCoords(pPed)
+        local pHeading = GetEntityHeading(pPed)
+        
+        if tonumber(data.number) then
+            Offline.SendEventToServer('offline:addItemPickup', data.item.type, nil, data.item.label, tonumber(data.number), {x = pCoords.x, y = pCoords.y, z = pCoords.z, w = pHeading})
             TaskPlayAnim(PlayerPedId(), "random@domestic", "pickup_low" , 8.0, -8.0, 1780, 35, 0.0, false, false, false)
         end
     end
@@ -220,15 +258,6 @@ function GramsOrKg(weight)
     end
 end
 
-local ItemVetement = {
-    ['tshirt'] = {15, 0},
-    ['pants'] = {15, 0},
-    ['shoes'] = {23, 0},
-    ['helmet'] = {-1, 0},
-    ['glasses'] = {-1, 0},
-    ['chain'] = {-1, 0},
-}
-
 function loadPlayerInventory(result)
     items = {}
     fastItems = {}
@@ -245,6 +274,7 @@ function loadPlayerInventory(result)
                 name = v.name,
                 count = v.count,
                 uniqueId = v.uniqueId,
+                data = v.data,
                 type = v.type,
                 usable = false,
                 slot = k
@@ -278,6 +308,7 @@ function loadPlayerInventory(result)
                     name = v.name,
                     count = v.count,
                     uniqueId = v.uniqueId,
+                    data = v.data,
                     type = "item_standard",
                     usable = true
                 })
@@ -291,6 +322,7 @@ function loadPlayerInventory(result)
                     name = v.name,
                     count = v.count,
                     uniqueId = v.uniqueId,
+                    data = v.data,
                     type = "item_standard",
                     usable = true
                 })
@@ -310,7 +342,8 @@ RegisterNUICallback("PutIntoFast", function(data, cb)
             name = data.item.name,
             type = data.item.type,
             count = data.item.count,
-            uniqueId = data.item.uniqueId
+            uniqueId = data.item.uniqueId,
+            data = data.item.data
         }
         SetFieldValueFromNameEncode('Offline', FastWeapons)
         loadPlayerInventory(currentMenu)
@@ -387,9 +420,6 @@ function SetKeepInputMode(bool)
             end
 
             threadCreated = false
-        end)
-    end
-end          threadCreated = false
         end)
     end
 end

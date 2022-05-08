@@ -33,7 +33,7 @@ AddEventHandler("registerPlayer", function()
     local source = source
 
     if not Offline.ServerPlayers[source] then
-        Offline.addTokenToClient(source)
+        Offline.GeneratorTokenConnecting(source)
         MySQL.Async.fetchAll('SELECT * FROM players WHERE identifier = @identifier', {
             ['@identifier'] = GetPlayerIndentifier(source)
         }, function(result)
@@ -53,7 +53,7 @@ AddEventHandler("registerPlayer", function()
                     healt = 200,
                     skin = nil,
                     cash = Config.Informations["StartMoney"].cash,
-                    dirty = Config.Informations["StartMoney"].dirty,
+                    dirty = Config.Informations["StartMoney"].dirty
                 }
                 MySQL.Async.execute('INSERT INTO players (identifier, discordId, token, characterInfos, coords) VALUES(@identifier, @discordId, @token, @characterInfos, @coords)', {
                     ['@identifier'] = Offline.ServerPlayers[source].identifier,
@@ -61,15 +61,18 @@ AddEventHandler("registerPlayer", function()
                     ['@token'] = Offline.ServerPlayers[source].token,
                     ['@characterInfos'] = json.encode(Offline.ServerPlayers[source].characterInfos),
                     ['@coords'] = json.encode(Offline.ServerPlayers[source].coords)
-                }, function(result)
-                    MySQL.Async.fetchAll('SELECT * FROM players WHERE identifier = @identifier', {
-                        ['@identifier'] = Offline.ServerPlayers[source].identifier
-                    }, function(result)
-                        Offline.ServerPlayers[source].id = result[1].id
-                    end)
-                    Offline.SendEventToClient('InitPlayer', source, Offline.ServerPlayers[source])
-                    Config.Development.Print("Successfully registered player " .. GetPlayerName(source))
+                }, function()
                 end)
+                Wait(500)
+                MySQL.Async.fetchAll('SELECT * FROM players WHERE identifier = @identifier', {
+                    ['@identifier'] = Offline.ServerPlayers[source].identifier
+                }, function(result)
+                    if result[1] then
+                        Offline.ServerPlayers[source].id = result[1].id
+                    end
+                end)
+                Offline.SendEventToClient('InitPlayer', source, Offline.ServerPlayers[source])
+                Config.Development.Print("Successfully registered player " .. GetPlayerName(source))
             else
                 Offline.ServerPlayers[source] = {
                     id = result[1].id,
@@ -146,3 +149,24 @@ RegisterCommand('sync', function(source)
         ['@health'] = GetEntityHealth(GetPlayerPed(source))
     })
 end, false)
+
+-- --- Function that print elapsed months, days, hours since a date
+-- function Offline.GetTimeElapsed(date)
+--     local now = os.time()
+--     local diff = now - date
+--     local seconds = diff % 60
+--     local minutes = math.floor(diff / 60) % 60
+--     local hours = math.floor(diff / 3600) % 24
+--     local days = math.floor(diff / 86400) % 30
+--     local months = math.floor(diff / 2592000) % 12
+--     local years = math.floor(diff / 31536000)
+--     return months .. " mois, "..days.." jours, " .. hours .. " heures, " .. minutes .. " minutes et " .. seconds .. " secondes"
+-- end
+
+
+-- CreateThread(function()
+--     while true do
+--         print(Offline.GetTimeElapsed(os.time{year=2022, month=3, day=6, hour=21, min = 0, sec = 0}))
+--         Wait(1000)
+--     end
+-- end)

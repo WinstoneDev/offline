@@ -28,7 +28,7 @@ end
 
 Offline.Money.RemovePlayerMoney = function(player, amount)
     if player ~= nil then
-        if player.cash >= amount then
+        if player.cash >= tonumber(amount) then
             player.cash = player.cash - amount
             Offline.SendEventToClient('UpdatePlayer', player.source, player)
         end
@@ -51,7 +51,7 @@ end
 
 Offline.Money.RemovePlayerDirtyMoney = function(player, amount)
     if player ~= nil then
-        if player.dirty >= amount then
+        if player.dirty >= tonumber(amount) then
             player.dirty = player.dirty - amount
             Offline.SendEventToClient('UpdatePlayer', player.source, player)
         end

@@ -2,7 +2,7 @@ Offline.RegisterZone('Récupération de pièce d\'identité', vector3(-1093.411,
     local player = Offline.ServerPlayers[source]
     local identity = Offline.Inventory.GetInventoryItem(player, 'idcard')
     if identity == nil then
-        Offline.Inventory.AddItemInInventory(player, 'idcard', 1, player.characterInfos.Prenom.." "..player.characterInfos.NDF, player.characterInfos)
+        Offline.Inventory.AddItemInInventory(player, 'idcard', 1, player.characterInfos.Prenom.." "..player.characterInfos.NDF, nil, player.characterInfos)
         Offline.SendEventToClient('offline:notify', source,  '1 '..player.characterInfos.Prenom.." "..player.characterInfos.NDF..' ont été ~g~ajouté(s)~s~ à votre inventaire.')
     else
         Offline.SendEventToClient('offline:notify', source, 'Vous avez ~r~déjà~s~ une pièce d\'identité.')

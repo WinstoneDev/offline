@@ -3,6 +3,8 @@ Offline.Pickup = {}
 Offline.IsRetrieving = false
 
 Offline.RegisterClientEvent('offline:interactItemPickup', function(type, data)
+    print(type)
+    print(json.encode(data))
     if type == "create" then
         object = CreateObject(data.model, data.coords.x, data.coords.y, data.coords.z - 1, false, false, false)
         SetEntityHeading(object, data.coords.w)
@@ -21,7 +23,9 @@ Offline.RegisterClientEvent('offline:interactItemPickup', function(type, data)
             label = data.label, 
             count = data.count,
             coords = vector3(data.coords.x, data.coords.y, data.coords.z),
-            uniqueId = data.uniqueId
+            uniqueId = data.uniqueId,
+            data = data.data,
+            type = data.type
         }
     elseif type == "retrieve" then
         DeleteEntity(Offline.Pickup[data.id].object)
@@ -60,7 +64,9 @@ Citizen.CreateThread(function()
                             label = v.label, 
                             count = v.count,
                             coords = v.coords,
-                            uniqueId = v.uniqueId
+                            uniqueId = v.uniqueId,
+                            data = v.data,
+                            type = v.type
                         })
                     end
                 end

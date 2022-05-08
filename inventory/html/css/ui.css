@@ -6,7 +6,7 @@ body {
 * {
     padding: 0;
     margin: 0;
-    font-family: 'Signika', sans-serif;
+    font-family: 'Alata', sans-serif;
     color: #fff;
     text-shadow: -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000, 0.5px 0.5px 0 #000;
 }
@@ -26,7 +26,8 @@ body {
     position: relative;
     top: 19.45%;
     right: -3.5%;
-    width: 170px;
+    width: 200px;
+    font-size: 115%;
     display: table;
 }
 
@@ -216,7 +217,7 @@ input[type=number] {
     padding: 5px;
     width: 155px;
     position: absolute;
-    font-size: 13.1px;
+    font-size: 85%;
     left: 125%;
     top: 0.5%;
     transform: translate(-50%, -50%)
@@ -227,7 +228,7 @@ input[type=number] {
     padding: 5px;
     width: 174px;
     position: absolute;
-    font-size: 13.1px;
+    font-size: 85%;
     left: 64%;
     top: 0.5%;
     transform: translate(-50%, -50%)
@@ -238,7 +239,7 @@ input[type=number] {
     padding: 5px;
     width: 155px;
     position: absolute;
-    font-size: 13.1px;
+    font-size: 85%;
     left: 37%;
     top: 1%;
     transform: translate(-50%, -50%)

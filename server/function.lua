@@ -11,7 +11,7 @@ Offline.RateLimit = {
     ['TeleportPlayers'] = 15,
     ['SetBucket'] = 10,
     ['offline:saveskin'] = 50,
-    ['SetIdentity'] = 1,
+    ['SetIdentity'] = 10,
     ['zones:haveInteract'] = 5,
     ['offline:renameItem'] = 5,
     ['offline:useItem'] = 20,
@@ -21,7 +21,13 @@ Offline.RateLimit = {
     ['offline:haveExitedZone'] = 20,
     ['offline:GetBankAccounts'] = 20,
     ['offline:BankCreateAccount'] = 5,
-    ['offline:AddClothesInInventory'] = 10
+    ['offline:AddClothesInInventory'] = 10,
+    ['offline:BankChangeAccountStatus'] = 10,
+    ['offline:BankDeleteAccount'] = 10,
+    ['offline:BankCreateCard'] = 10,
+    ['DropInjectorDetected'] = 1,
+    ['offline:BankwithdrawMoney'] = 10,
+    ['offline:BankAddMoney'] = 10
 }
 
 Citizen.CreateThread(function()
@@ -31,27 +37,48 @@ Citizen.CreateThread(function()
     end
 end)
 
-Offline.GeneratorToken = function()
+Offline.GeneratorToken = function(_source)
 	local token = ""
 
 	for i = 1, 150 do
 		token = token .. string.char(math.random(97, 122))
 	end
-    if Offline.Token[token] then
-        Offline.GeneratorToken()
+    if Offline.Token[_source][token] then
+        Offline.GeneratorToken(_source)
     else
         return token
     end
 end
 
-for i = 0, GetNumResources(), 1 do
-    local resourceName = GetResourceByFindIndex(i)
+Offline.GeneratorTokenConnecting = function(_source)
+    if not Offline.addTokenClient[_source] then
+        Offline.addTokenClient[_source] = _source
 
-    if resourceName then
-        token = Offline.GeneratorToken()
-        Offline.Resource[resourceName] = token
-        Offline.Token[token] = resourceName
+        Offline.Resource[_source] = {}
+        Offline.Token[_source] = {}
+
+        for i = 0, GetNumResources(), 1 do
+            local resourceName = GetResourceByFindIndex(i)
+    
+            if resourceName then
+                token = Offline.GeneratorToken(_source)
+                Offline.Resource[_source][resourceName] = token
+                Offline.Token[_source][token] = resourceName
+            end
+        end
+
+        Offline.SendEventToClient("offline:addTokenEvent", _source, Offline.Resource[_source])
+    else
+        DropPlayer(_source, 'Injector detected ╭∩╮（︶_︶）╭∩╮')
     end
+end
+
+Offline.GeneratorNewToken = function(_source, resourceName)
+    token = Offline.GeneratorToken(_source)
+
+    Offline.Resource[_source][resourceName] = token
+    Offline.Token[_source][token] = resourceName
+    Offline.SendEventToClient("offline:addTokenEvent", _source, Offline.Resource[_source])
 end
 
 Offline.RegisterServerEvent = function(eventName, cb)
@@ -65,7 +92,7 @@ end
 
 Offline.UseServerEvent = function(eventName, ...)
     if Offline.Event[eventName] then
-        if eventName ~= "updateNumberPlayer" then
+        if eventName ~= "offline:updateNumberPlayer" then
             if not Offline.PlayersLimit[eventName] then 
                 Offline.PlayersLimit[eventName] = {}
             end
@@ -74,10 +101,12 @@ Offline.UseServerEvent = function(eventName, ...)
             end
             Offline.PlayersLimit[eventName][source] = Offline.PlayersLimit[eventName][source] + 1
             if Offline.PlayersLimit[eventName][source] >= Offline.RateLimit[eventName] then 
-                --DropPlayer(source, 'Offline ratelimit '..eventName)
+                -- DropPlayer(source, 'Spam trigger detected ╭∩╮（︶_︶）╭∩╮ ('..eventName..')')
             else
                 Offline.Event[eventName](...)
             end
+        else
+            Offline.Event[eventName](...)
         end
     end
 end
@@ -86,7 +115,8 @@ RegisterNetEvent("offline:useEvent")
 AddEventHandler("offline:useEvent", function(eventName, tokenResource, ...)
     local _src = source
 
-    if eventName and tokenResource and Offline.Token[tokenResource] then
+    if eventName and tokenResource and Offline.Token[_src][tokenResource] then
+        Offline.GeneratorNewToken(_src, Offline.Token[_src][tokenResource])
         Offline.UseServerEvent(eventName, ...)
         Config.Development.Print("Successfully triggered server event " .. eventName)
     else
@@ -110,15 +140,6 @@ Offline.SendEventToClient = function(name, receiver, ...)
     Config.Development.Print("Successfully sent event " .. name .. " to client ".. receiver)
 end
 
-Offline.addTokenToClient = function(_src)
-    if not Offline.addTokenClient[_src] then
-        Offline.addTokenClient[_src] = _src
-        Offline.SendEventToClient("offline:addTokenEvent", _src, Offline.Resource)
-    else
-        DropPlayer(_src, 'Injector detected ╭∩╮（︶_︶）╭∩╮')
-    end
-end
-
 Offline.AddEventHandler = function(name, execute)
     if not name then return end
     if not execute then return end
@@ -134,9 +155,13 @@ Offline.GetEntityCoords = function(entity)
     return vector3(_entity.x, _entity.y, _entity.z)
 end
 
-Offline.RegisterServerEvent('updateNumberPlayer', function()
+Offline.RegisterServerEvent('offline:updateNumberPlayer', function()
     local _source = source
-    Offline.SendEventToClient('updateNumberPlayer', _source, #Offline.ServerPlayers)
+    local number = 0
+    for key, value in pairs(Offline.ServerPlayers) do
+        number = number + 1
+    end
+    Offline.SendEventToClient('offline:receiveNumberPlayers', _source, number)
 end)
 
 Offline.RegisterServerEvent('DropInjectorDetected', function()

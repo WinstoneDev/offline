@@ -6,7 +6,6 @@ MySQL.ready(function()
     MySQL.Async.fetchAll('SELECT inventory FROM players', {}, function(result)
         for k, v in pairs(result) do
             local inventory = json.decode(v.inventory)
-
             for key, value in pairs(inventory) do
                 if value.uniqueId then
                     Offline.ItemsId[value.uniqueId] = value.uniqueId
@@ -77,7 +76,7 @@ Offline.Inventory.GetInventoryItem = function(player, item)
         end
     end
     if count ~= 0 then
-        return {count = count, label = Config.Items[item].label, uniqueId = data.uniqueId}
+        return {count = count, label = Config.Items[item].label, uniqueId = data.uniqueId, data = data.data}
     else
         return nil
     end
@@ -97,7 +96,7 @@ Offline.Inventory.CanCarryItem = function(player, item, quantity)
     end
 end
 
-Offline.Inventory.AddItemInInventory = function(player, item, quantity, newlabel, uniqueId)
+Offline.Inventory.AddItemInInventory = function(player, item, quantity, newlabel, uniqueId, data)
     if not player then return end
     if not item then return end
     if not quantity then return end
@@ -122,8 +121,12 @@ Offline.Inventory.AddItemInInventory = function(player, item, quantity, newlabel
                 if Config.InsertItems[item] then
                     if uniqueId == nil then
                         uniqueId = Offline.Inventory.GiveUniqueId()
+                    end 
+                    if data ~= nil then
+                        table.insert(inventory, {data = data, uniqueId = uniqueId, name = item, label = Itemlabel, count = quantity})
+                    else
+                        table.insert(inventory, {uniqueId = uniqueId, name = item, label = Itemlabel, count = quantity})
                     end
-                    table.insert(inventory, {uniqueId = uniqueId, name = item, label = Itemlabel, count = quantity})
                 else
                     table.insert(inventory, {name = item, label = Itemlabel, count = quantity})
                 end
@@ -136,6 +139,8 @@ Offline.Inventory.AddItemInInventory = function(player, item, quantity, newlabel
         end
     end
 end
+
+
 
 Offline.Inventory.RemoveItemInInventory = function(player, item, quantity, itemLabel)
     if not player then return end
@@ -265,7 +270,7 @@ Offline.RegisterServerEvent('offline:transfer', function(table)
             if Offline.Inventory.GetInventoryItem(Offline.ServerPlayers[source], table.name).count >= table.count then
                 if Offline.Inventory.CanCarryItem(Offline.ServerPlayers[table.target], table.name, table.count) then
                     Offline.Inventory.RemoveItemInInventory(Offline.ServerPlayers[source], table.name, table.count, table.label)
-                    Offline.Inventory.AddItemInInventory(Offline.ServerPlayers[table.target], table.name, table.count, table.label, table.uniqueId)
+                    Offline.Inventory.AddItemInInventory(Offline.ServerPlayers[table.target], table.name, table.count, table.label, table.uniqueId, table.data)
                     Offline.SendEventToClient('offline:notify', table.target,  table.count..' '..table.label..' ont été ~g~ajouté(s)~s~ à votre inventaire.')
                     Offline.SendEventToClient('offline:notify', source, table.count..' '..table.label..' ont été ~r~retiré(s)~s~ à votre inventaire.')
                 else

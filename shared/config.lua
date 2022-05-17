@@ -17,12 +17,20 @@ Config.DiscordStatus = {
 }
 
 Config.Development = {
-    Debug = false,
+    Debug = true,
     Print = function(message)
         if Config.Development.Debug then
             print("[Offline] " .. message)
         end
     end
+}
+
+Config.StaffGroups = {
+    [4] = "dev",
+    [3] = "superadmin",
+    [2] = "admin",
+    [1] = "mod",
+    [0] = "user"
 }
 
 Config.Items = {
@@ -111,7 +119,7 @@ Config.zoneClothShop = {
         BlipScale = 0.7,
         Type = "Cloth"
     },
-    Masks = {
+    Masques = {
         {coords = vector3(-1337.25, -1277.54, 3.88)},
         Header = "shopui_title_movie_masks",
         BlipId = 362,

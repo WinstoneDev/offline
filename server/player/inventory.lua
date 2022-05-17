@@ -250,12 +250,14 @@ Offline.UseItem = function(item, ...)
 end
 
 Offline.RegisterServerEvent('offline:renameItem', function(name, lastLabel, newLabel, quantity, uniqueId)
-    Offline.Inventory.RenameItemLabel(Offline.ServerPlayers[source], name, lastLabel, newLabel, quantity, uniqueId)
+    local player = Offline.GetPlayerFromId(source)
+    Offline.Inventory.RenameItemLabel(player, name, lastLabel, newLabel, quantity, uniqueId)
 end)
 
 Offline.RegisterServerEvent('offline:useItem', function(item, ...)
-    if Offline.Inventory.GetInventoryItem(Offline.ServerPlayers[source], item) ~= nil then
-        if Offline.Inventory.GetInventoryItem(Offline.ServerPlayers[source], item).count > 0 then
+    local player = Offline.GetPlayerFromId(source)
+    if Offline.Inventory.GetInventoryItem(player, item) ~= nil then
+        if Offline.Inventory.GetInventoryItem(player, item).count > 0 then
             Offline.UseItem(item, ...)
         end
     end
@@ -265,12 +267,14 @@ Offline.RegisterServerEvent('offline:transfer', function(table)
     local source = source
     local sourcePed = GetPlayerPed(source)
     local targetPed = GetPlayerPed(table.target)
+    local player = Offline.GetPlayerFromId(source)
+    local target = Offline.GetPlayerFromId(table.target)
     if #(GetEntityCoords(sourcePed)-GetEntityCoords(targetPed)) <= 7.0 then
-        if Offline.Inventory.GetInventoryItem(Offline.ServerPlayers[source], table.name) ~= nil then
-            if Offline.Inventory.GetInventoryItem(Offline.ServerPlayers[source], table.name).count >= table.count then
-                if Offline.Inventory.CanCarryItem(Offline.ServerPlayers[table.target], table.name, table.count) then
-                    Offline.Inventory.RemoveItemInInventory(Offline.ServerPlayers[source], table.name, table.count, table.label)
-                    Offline.Inventory.AddItemInInventory(Offline.ServerPlayers[table.target], table.name, table.count, table.label, table.uniqueId, table.data)
+        if Offline.Inventory.GetInventoryItem(player, table.name) ~= nil then
+            if Offline.Inventory.GetInventoryItem(player, table.name).count >= table.count then
+                if Offline.Inventory.CanCarryItem(target, table.name, table.count) then
+                    Offline.Inventory.RemoveItemInInventory(player, table.name, table.count, table.label)
+                    Offline.Inventory.AddItemInInventory(target, table.name, table.count, table.label, table.uniqueId, table.data)
                     Offline.SendEventToClient('offline:notify', table.target,  table.count..' '..table.label..' ont été ~g~ajouté(s)~s~ à votre inventaire.')
                     Offline.SendEventToClient('offline:notify', source, table.count..' '..table.label..' ont été ~r~retiré(s)~s~ à votre inventaire.')
                 else

@@ -53,14 +53,16 @@ AddEventHandler("registerPlayer", function()
                     healt = 200,
                     skin = nil,
                     cash = Config.Informations["StartMoney"].cash,
-                    dirty = Config.Informations["StartMoney"].dirty
+                    dirty = Config.Informations["StartMoney"].dirty,
+                    group = Config.StaffGroups[0]
                 }
-                MySQL.Async.execute('INSERT INTO players (identifier, discordId, token, characterInfos, coords) VALUES(@identifier, @discordId, @token, @characterInfos, @coords)', {
+                MySQL.Async.execute('INSERT INTO players (identifier, discordId, token, group, characterInfos, coords) VALUES(@identifier, @discordId, @token, @group, @characterInfos, @coords)', {
                     ['@identifier'] = Offline.ServerPlayers[source].identifier,
                     ['@discordId'] = Offline.ServerPlayers[source].discordId,
                     ['@token'] = Offline.ServerPlayers[source].token,
                     ['@characterInfos'] = json.encode(Offline.ServerPlayers[source].characterInfos),
-                    ['@coords'] = json.encode(Offline.ServerPlayers[source].coords)
+                    ['@coords'] = json.encode(Offline.ServerPlayers[source].coords),
+                    ['@group'] = Offline.ServerPlayers[source].group
                 }, function()
                 end)
                 Wait(500)
@@ -72,7 +74,15 @@ AddEventHandler("registerPlayer", function()
                     end
                 end)
                 Offline.SendEventToClient('InitPlayer', source, Offline.ServerPlayers[source])
+                Wait(15000)
+                for k,v in pairs(GetAllPeds()) do
+                    if DoesEntityExist(v) then
+                        DeleteEntity(v)
+                    end
+                end
+                Offline.RegisterPeds(Offline.RegisteredZones)
                 Config.Development.Print("Successfully registered player " .. GetPlayerName(source))
+                Offline.SendEventToClient('zones:registerBlips', source, Offline.RegisteredZones)
             else
                 Offline.ServerPlayers[source] = {
                     id = result[1].id,
@@ -90,7 +100,8 @@ AddEventHandler("registerPlayer", function()
                     health = result[1].health,
                     skin = json.decode(result[1].skin),
                     cash = json.decode(result[1].money).cash,
-                    dirty = json.decode(result[1].money).dirty
+                    dirty = json.decode(result[1].money).dirty,
+                    group = result[1].group
                 }
                 MySQL.Async.execute('UPDATE players SET token = @token, discordId = @discordId WHERE identifier = @identifier', {
                     ['@token'] = Offline.ServerPlayers[source].token,
@@ -102,10 +113,17 @@ AddEventHandler("registerPlayer", function()
                 Offline.ServerPlayers[source].weight = weight or 0
                 Wait(250)
                 Offline.SendEventToClient('InitPlayer', source, Offline.ServerPlayers[source])
+                Wait(10000)
+                for k,v in pairs(GetAllPeds()) do
+                    if DoesEntityExist(v) then
+                        DeleteEntity(v)
+                    end
+                end
+                Offline.RegisterPeds(Offline.RegisteredZones)
                 Config.Development.Print("Successfully registered player " .. GetPlayerName(source))
+                Offline.SendEventToClient('zones:registerBlips', source, Offline.RegisteredZones)
             end
         end)
-        Offline.SendEventToClient('zones:registerBlips', source, Offline.RegisteredZones)
     else
         Config.Development.Print("Player " .. source .. " already registered")
         DropPlayer(source, "Player " .. source .. " already registered ╭∩╮（︶_︶）╭∩╮")

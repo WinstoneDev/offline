@@ -1,5 +1,5 @@
 Offline.RegisterZone('Récupération de pièce d\'identité', vector3(-1093.411, -809.2663, 19.2816), function(source)
-    local player = Offline.ServerPlayers[source]
+    local player = Offline.GetPlayerFromId(source)
     local identity = Offline.Inventory.GetInventoryItem(player, 'idcard')
     if identity == nil then
         Offline.Inventory.AddItemInInventory(player, 'idcard', 1, player.characterInfos.Prenom.." "..player.characterInfos.NDF, nil, player.characterInfos)
@@ -24,7 +24,10 @@ end, 10.0, false, {
     coords = vector4(-1092.842, -809.9628, 18.27598, 28.8649),
     pedName = "Sadam",
     pedModel = "s_m_y_sheriff_01",
-    drawDistName = 5.0
+    drawDistName = 5.0,
+    scenario = {
+        anim = "WORLD_HUMAN_CLIPBOARD"
+    }
 })
 
 Offline.RegisterUsableItem("idcard", function(data)

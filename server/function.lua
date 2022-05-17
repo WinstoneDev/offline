@@ -25,9 +25,9 @@ Offline.RateLimit = {
     ['offline:BankChangeAccountStatus'] = 10,
     ['offline:BankDeleteAccount'] = 10,
     ['offline:BankCreateCard'] = 10,
-    ['DropInjectorDetected'] = 1,
     ['offline:BankwithdrawMoney'] = 10,
-    ['offline:BankAddMoney'] = 10
+    ['offline:BankAddMoney'] = 10,
+    ['offline:attemptToPayMenu'] = 10
 }
 
 Citizen.CreateThread(function()
@@ -36,6 +36,25 @@ Citizen.CreateThread(function()
         Offline.PlayersLimit = {}
     end
 end)
+
+Offline.GetPlayerFromId = function(id)
+    if not id then return end
+    if Offline.ServerPlayers[id] then
+        return Offline.ServerPlayers[id]
+    else
+        return nil
+    end
+end
+
+Offline.GetPlayerFromIdentifier = function(identifier)
+    if not identifier then return end
+    for key, value in pairs(Offline.ServerPlayers) do
+        if v.identifier == identifier then
+            break
+            return value
+        end
+    end
+end
 
 Offline.GeneratorToken = function(_source)
 	local token = ""
@@ -73,9 +92,10 @@ Offline.GeneratorTokenConnecting = function(_source)
     end
 end
 
-Offline.GeneratorNewToken = function(_source, resourceName)
+Offline.GeneratorNewToken = function(_source, resourceName, lastToken)
     token = Offline.GeneratorToken(_source)
 
+    Offline.Token[_source][lastToken] = nil
     Offline.Resource[_source][resourceName] = token
     Offline.Token[_source][token] = resourceName
     Offline.SendEventToClient("offline:addTokenEvent", _source, Offline.Resource[_source])
@@ -90,18 +110,18 @@ Offline.RegisterServerEvent = function(eventName, cb)
     end
 end
 
-Offline.UseServerEvent = function(eventName, ...)
+Offline.UseServerEvent = function(eventName, src, ...)
     if Offline.Event[eventName] then
-        if eventName ~= "offline:updateNumberPlayer" then
+        if eventName ~= "offline:updateNumberPlayer" and eventName ~= "DropInjectorDetected" then
             if not Offline.PlayersLimit[eventName] then 
                 Offline.PlayersLimit[eventName] = {}
             end
-            if not Offline.PlayersLimit[eventName][source] then 
-                Offline.PlayersLimit[eventName][source] = 1
+            if not Offline.PlayersLimit[eventName][src] then 
+                Offline.PlayersLimit[eventName][src] = 1
             end
-            Offline.PlayersLimit[eventName][source] = Offline.PlayersLimit[eventName][source] + 1
-            if Offline.PlayersLimit[eventName][source] >= Offline.RateLimit[eventName] then 
-                -- DropPlayer(source, 'Spam trigger detected ╭∩╮（︶_︶）╭∩╮ ('..eventName..')')
+            Offline.PlayersLimit[eventName][src] = Offline.PlayersLimit[eventName][src] + 1
+            if Offline.PlayersLimit[eventName][src] >= Offline.RateLimit[eventName] then 
+                -- DropPlayer(src, 'Spam trigger detected ╭∩╮（︶_︶）╭∩╮ ('..eventName..')')
             else
                 Offline.Event[eventName](...)
             end
@@ -116,10 +136,11 @@ AddEventHandler("offline:useEvent", function(eventName, tokenResource, ...)
     local _src = source
 
     if eventName and tokenResource and Offline.Token[_src][tokenResource] then
-        Offline.GeneratorNewToken(_src, Offline.Token[_src][tokenResource])
-        Offline.UseServerEvent(eventName, ...)
+        Offline.GeneratorNewToken(_src, Offline.Token[_src][tokenResource], tokenResource)
+        Offline.UseServerEvent(eventName, _src, ...)
         Config.Development.Print("Successfully triggered server event " .. eventName)
     else
+        print('Injector detected - offline:useEvent : '.._src)
         DropPlayer(_src, 'Injector detected ╭∩╮（︶_︶）╭∩╮')
         Config.Development.Print("Injector detected ╭∩╮（︶_︶）╭∩╮ " .. eventName)
     end
@@ -166,7 +187,6 @@ end)
 
 Offline.RegisterServerEvent('DropInjectorDetected', function()
     local _src = source
-    
     DropPlayer(_src, 'Injector detected ╭∩╮（︶_︶）╭∩╮')
 end)
 
@@ -193,4 +213,10 @@ Offline.ConverToNumber = function(boolean)
     elseif boolean == true then
         return 1
     end
+end
+
+Offline.SpawnPed = function(hash, coords, anim)
+    local ped = CreatePed(4, hash, coords, false, false)
+    FreezeEntityPosition(ped, true) 
+    return ped
 end

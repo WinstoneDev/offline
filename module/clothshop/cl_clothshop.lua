@@ -114,9 +114,11 @@ function Clothes:OpenMenu(header)
                                 Offline.TriggerLocalEvent('skinchanger:change', 'pants_2', Clothes.TableShirt[i] - 1)
                             end,
                             onSelected = function()    
-                                Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
-                                    Offline.SendEventToServer('offline:AddClothesInInventory', 'pants', 'Pantalon '..i, {skin.pants_1, skin.pants_2})
-                                end)
+                                -- Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
+                                --     Offline.SendEventToServer('offline:AddClothesInInventory', 'pants', 'Pantalon '..i, {skin.pants_1, skin.pants_2})
+                                -- end)
+                                local message = 'Achat d\'un pantalon'
+                                Offline.SendEventToServer('offline:attemptToPayMenu', message, 30)
                             end,
                             onActive = function()
                                 Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
@@ -178,6 +180,8 @@ function Clothes:OpenMenu(header)
     end
 end
 
-Offline.RegisterClientEvent('offline:openClothMenu', function(header)
-    Clothes:OpenMenu(header)
+Offline.RegisterClientEvent('offline:openClothMenu', function(header, type)
+    if type == "Cloth" then
+        Clothes:OpenMenu(header)
+    end
 end)

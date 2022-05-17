@@ -7,9 +7,26 @@ Offline.RegisterClientEvent('zones:registerBlips', function(zones)
     end
 end)
 
+local pedEntity = nil
+
 Offline.RegisterClientEvent('zones:enteredZone', function(zone)
     if zone.drawPed then
-        zone.ped = Offline.SpawnPed(zone.pedInfos.pedModel, zone.pedInfos.coords)
+        pedEntity = NetworkGetEntityFromNetworkId(zone.pedNetId)
+        if DoesEntityExist(pedEntity) then
+            SetPedHearingRange(pedEntity, 0.0)
+            SetPedSeeingRange(pedEntity, 0.0)
+            SetEntityInvincible(pedEntity, true)
+            SetPedAlertness(pedEntity, 0.0)
+            FreezeEntityPosition(pedEntity, true) 
+            SetPedFleeAttributes(pedEntity, 0, 0)
+            SetBlockingOfNonTemporaryEvents(pedEntity, true)
+            SetPedCombatAttributes(pedEntity, 46, true)
+            SetPedFleeAttributes(pedEntity, 0, 0)
+            if zone.pedInfos.scenario then
+                ClearPedTasksImmediately(pedEntity)
+                TaskStartScenarioInPlace(pedEntity, zone.pedInfos.scenario.anim, 0, true)
+            end
+        end
     end
     while true do 
         local coords = GetEntityCoords(PlayerPedId())
@@ -28,16 +45,13 @@ Offline.RegisterClientEvent('zones:enteredZone', function(zone)
             end
             if zone.drawPed then
                 if dist <= zone.pedInfos.drawDistName then
-                    if DoesEntityExist(zone.ped) then
+                    if DoesEntityExist(pedEntity) then
                         Offline.DrawText3D(zone.pedInfos.coords.x, zone.pedInfos.coords.y, zone.pedInfos.coords.z + 1.9, zone.pedInfos.pedName, 5)
                     end
                 end
             end
         else
-            if DoesEntityExist(zone.ped) then
-                DeleteEntity(zone.ped)
-                zone.ped = nil
-            end
+            pedEntity = nil
             Offline.SendEventToServer('offline:haveExitedZone')
             RageUI.CloseAll()
             break

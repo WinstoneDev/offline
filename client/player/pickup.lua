@@ -3,8 +3,6 @@ Offline.Pickup = {}
 Offline.IsRetrieving = false
 
 Offline.RegisterClientEvent('offline:interactItemPickup', function(type, data)
-    print(type)
-    print(json.encode(data))
     if type == "create" then
         object = CreateObject(data.model, data.coords.x, data.coords.y, data.coords.z - 1, false, false, false)
         SetEntityHeading(object, data.coords.w)

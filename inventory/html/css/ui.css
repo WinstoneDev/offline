@@ -6,7 +6,7 @@ body {
 * {
     padding: 0;
     margin: 0;
-    font-family: 'Alata', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     color: #fff;
     text-shadow: -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000, 0.5px 0.5px 0 #000;
 }
@@ -17,7 +17,7 @@ body {
     top: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(255, 255, 255, .185);
+    background-color: rgba(109, 109, 109, 0.356);
     display: none;
     z-index: 0
 }
@@ -115,9 +115,9 @@ input[type=number] {
     height: 22%;
     bottom: -5%;
     color: #fff;
-    border: 1px solid rgba(0, 0, 0, .15);
+    border: 3px solid rgba(0, 0, 0, .15);
     background-color: rgba(0, 0, 0, .25);
-    margin: 1px;
+    margin: 2px;
     border-radius: 20px;
     position: relative;
 }
@@ -128,7 +128,7 @@ input[type=number] {
     height: 130px;
     bottom: -5%;
     color: #fff;
-    border: 1px solid rgba(0, 0, 0, .15);
+    border: 3px solid rgba(0, 0, 0, .15);
     background-color: rgba(0, 0, 0, .25);
     margin: 2px;
     border-radius: 20px;
@@ -145,7 +145,7 @@ input[type=number] {
     height: 130px;
     bottom: 350.4%;
     color: #fff;
-    border: 1px solid rgba(0, 0, 0, .15);
+    border: 3px solid rgba(0, 0, 0, .15);
     background-color: rgba(0, 0, 0, .25);
     margin: 2px;
     border-radius: 20px;
@@ -281,7 +281,7 @@ input[type=number] {
     background-color: rgba(114, 114, 114, 0.308);
     border-style: solid;
     border-color: rgba(255, 255, 255, .2);
-    border-width: 1px 1px 1px 1px
+    border-width: 3px 3px 3px 3px
 }
 
 #used-item-image {
@@ -302,7 +302,7 @@ input[type=number] {
     background-color: rgba(114, 114, 114, 0.308);
     border-style: solid;
     border-color: rgba(255, 255, 255, .2);
-    border-width: 1px 1px 1px 1px
+    border-width: 3px 3px 3px 3px
 }
 
 #added-item-image {

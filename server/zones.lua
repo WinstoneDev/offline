@@ -37,11 +37,12 @@ end)
 
 Offline.RegisterServerEvent('offline:haveExitedZone', function()
     local _src = source
-    local player = Offline.ServerPlayers[_src]
+    local player = Offline.GetPlayerFromId(_src)
     player.currentZone = "Aucune"
 end)
 
 Citizen.CreateThread(function()
+    Wait(15000)
     while true do
         Citizen.Wait(0)
         for index, player in pairs(Offline.ServerPlayers) do
@@ -58,3 +59,13 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
+Offline.RegisterPeds = function(zones)
+    for name, zone in pairs(zones) do
+        if zone.drawPed then
+            Config.Development.Print("Registering ped " .. zone.pedInfos.pedName)
+            zone.ped = Offline.SpawnPed(zone.pedInfos.pedModel, zone.pedInfos.coords)
+            zone.pedNetId = NetworkGetNetworkIdFromEntity(zone.ped)
+        end
+    end
+end

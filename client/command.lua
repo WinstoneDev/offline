@@ -111,11 +111,3 @@ RegisterCommand('pos', function()
     Config.Development.Print(GetEntityCoords(PlayerPedId()))
     Config.Development.Print(GetEntityHeading(PlayerPedId()))
 end)
-
-RegisterCommand('tpc', function()
-    SetEntityCoords(GetPlayerPed(-1), 50.0, -977.0, -95.0)
-end)
-
-RegisterCommand('tpc2', function()
-    SetEntityCoords(GetPlayerPed(-1), 976.63, 70.29, 115.16)
-end)

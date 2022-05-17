@@ -19,4 +19,3 @@ Offline.RegisterServerEvent('TeleportPlayers', function(type, target)
         SetEntityCoords(GetPlayerPed(target), GetEntityCoords(GetPlayerPed(_source)))
     end
 end)
-

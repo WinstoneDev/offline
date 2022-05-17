@@ -25,6 +25,9 @@ function GetOriginalLabel(item)
 end
 
 CreateThread( function()
+    for a = 1, 15 do
+        EnableDispatchService(a, false) -- Pas de dispatch
+    end
     while true do
        Citizen.Wait(0)
         RestorePlayerStamina(PlayerId(), 1.0)
@@ -39,9 +42,6 @@ CreateThread( function()
         HideHudComponentThisFrame(20)
         BlockWeaponWheelThisFrame()
         SetPedCanSwitchWeapon(PlayerPedId(), false)
-        for a = 1, 15 do
-            EnableDispatchService(a, false) -- Pas de dispatch
-        end
         DisablePoliceReports() -- Disable Police Call
         if IsPedInAnyVehicle(GetPlayerPed(-1), false) then
             if GetPedInVehicleSeat(GetVehiclePedIsIn(GetPlayerPed(-1), false), 0) == GetPlayerPed(-1) then

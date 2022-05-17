@@ -52,7 +52,10 @@ end, 10.0, false, {
     coords = vector4(243.74, 226.52, 105.3, 170.0),
     pedName = "Bob",
     pedModel = "cs_bankman",
-    drawDistName = 5.0
+    drawDistName = 5.0,
+    scenario = {
+        anim = "WORLD_HUMAN_CLIPBOARD"
+    }
 })
 
 Offline.RegisterServerEvent('offline:GetBankAccounts', function()
@@ -60,7 +63,7 @@ Offline.RegisterServerEvent('offline:GetBankAccounts', function()
 end)
 
 Offline.RegisterServerEvent('offline:BankCreateAccount', function()
-    local player = Offline.ServerPlayers[source]
+    local player = Offline.GetPlayerFromId(source)
     local account = {
         owner = player.identifier,
         owner_name = player.characterInfos.Prenom .. " " .. player.characterInfos.NDF,
@@ -84,7 +87,7 @@ Offline.RegisterServerEvent('offline:BankCreateAccount', function()
 end)
 
 Offline.RegisterServerEvent('offline:BankChangeAccountStatus', function(id, state)
-    local player = Offline.ServerPlayers[source]
+    local player = Offline.GetPlayerFromId(source)
     MySQL.Async.execute('UPDATE bankaccounts SET courant = @courant WHERE id = @id', {
         ['@id'] = id,
         ['@courant'] = state
@@ -97,7 +100,7 @@ Offline.RegisterServerEvent('offline:BankChangeAccountStatus', function(id, stat
 end)
 
 Offline.RegisterServerEvent('offline:BankDeleteAccount', function(id)
-    local player = Offline.ServerPlayers[source]
+    local player = Offline.GetPlayerFromId(source)
     MySQL.Async.execute('DELETE FROM bankaccounts WHERE id = @id', {
         ['@id'] = id
     })
@@ -110,7 +113,7 @@ end)
 
 
 Offline.RegisterServerEvent('offline:BankCreateCard', function(id)
-    local player = Offline.ServerPlayers[source]
+    local player = Offline.GetPlayerFromId(source)
     local card = {
         owner_name = player.characterInfos.Prenom .. " " .. player.characterInfos.NDF,
         card_number = Offline.Bank.GenerateCardNumber(),
@@ -146,6 +149,7 @@ Offline.Bank.GetAccount = function(id)
 end
 
 Offline.Bank.AddTransaction = function(account, amount, message, type, player)
+    local player = Offline.GetPlayerFromId(source)
     local transaction = {
         amount = amount,
         type = type,
@@ -164,6 +168,7 @@ Offline.Bank.AddTransaction = function(account, amount, message, type, player)
 end
 
 Offline.Bank.UpdateAccount = function(account, amount, player)
+    local player = Offline.GetPlayerFromId(source)
     account.amountMoney = amount
     MySQL.Async.execute('UPDATE bankaccounts SET amountMoney = @amountMoney WHERE id = @id', {
         ['@id'] = account.id,
@@ -176,7 +181,7 @@ Offline.Bank.UpdateAccount = function(account, amount, player)
 end
 
 Offline.RegisterServerEvent('offline:BankAddMoney', function(amount, id)
-    local player = Offline.ServerPlayers[source]
+    local player = Offline.GetPlayerFromId(source)
     local account = Offline.Bank.GetAccount(id)
     if account ~= nil then
         if Offline.Money.GetPlayerMoney(player) >= tonumber(amount) then
@@ -191,7 +196,7 @@ Offline.RegisterServerEvent('offline:BankAddMoney', function(amount, id)
 end)
 
 Offline.RegisterServerEvent('offline:BankwithdrawMoney', function(amount, id)
-    local player = Offline.ServerPlayers[source]
+    local player = Offline.GetPlayerFromId(source)
     local account = Offline.Bank.GetAccount(id)
     if tonumber(account.amountMoney) >= tonumber(amount) then
         Offline.Bank.AddTransaction(account, amount, 'Retrait de ' .. amount .. '$', 'Retrait', player)
@@ -260,6 +265,6 @@ end
 
 Offline.RegisterUsableItem('carte', function(data)
     local _src = source
-    local player = Offline.ServerPlayers[_src]
+    local player = Offline.GetPlayerFromId(source)
     Offline.SendEventToClient('offline:useCarteBank', player.source, data)
 end)

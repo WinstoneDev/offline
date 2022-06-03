@@ -17,7 +17,7 @@ Config.DiscordStatus = {
 }
 
 Config.Development = {
-    Debug = true,
+    Debug = false,
     Print = function(message)
         if Config.Development.Debug then
             print("[Offline] " .. message)

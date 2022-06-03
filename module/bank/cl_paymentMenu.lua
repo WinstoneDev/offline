@@ -13,7 +13,7 @@ paymentMenu.mainMenu.Closed = function()
 end
 paymentMenu.cardsMenu = RageUI.CreateSubMenu(paymentMenu.mainMenu, " ", "Cartes")
 paymentMenu.cardsMenu:DisplayGlare(false)
-paymentMenu.cardsMenu.:AcceptFilter(true)
+paymentMenu.cardsMenu:AcceptFilter(true)
 paymentMenu.resumeTransactionMenu = RageUI.CreateSubMenu(paymentMenu.mainMenu, " ", "Résumé de la transaction")
 paymentMenu.resumeTransactionMenu:DisplayGlare(false)
 

@@ -220,3 +220,29 @@ Offline.SpawnPed = function(hash, coords, anim)
     FreezeEntityPosition(ped, true) 
     return ped
 end
+
+DiscordErrorType = {
+    GOOD = 200,
+    ERROR_NO_CONTENT = 204,
+    BAD_REQUEST = 400,
+    UNAUTHORIZED = 401,
+    FORBIDDEN = 403,
+    NOT_FOUND = 404,
+    METHOD_NOT_ALLOWED = 405,
+    TOO_MANY_REQUESTS = 429,
+    INTERNAL_ERROR = 500,
+    API_DOWN = 502,
+}
+
+function _getDiscordErrorType(code)
+    for key, value in pairs(DiscordErrorType) do
+        if value == code then
+            return tostring(key)
+            break
+        else
+            return "Unknown"
+        end
+    end
+end
+
+print(_getDiscordErrorType(502))

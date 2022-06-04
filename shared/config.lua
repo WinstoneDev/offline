@@ -1,4 +1,6 @@
+---@class Config
 Config = {}
+
 Config.Informations = {
     ["Version"] = "1.0.0",
     ["Name"] = "Offline V1 Whitelist",
@@ -17,7 +19,12 @@ Config.DiscordStatus = {
 }
 
 Config.Development = {
-    Debug = false,
+    Debug = true,
+    ---Print
+    ---@type function
+    ---@param message string
+    ---@return any
+    ---@public
     Print = function(message)
         if Config.Development.Debug then
             print("[Offline] " .. message)
@@ -26,11 +33,11 @@ Config.Development = {
 }
 
 Config.StaffGroups = {
-    [4] = "dev",
-    [3] = "superadmin",
-    [2] = "admin",
+    [0] = "user",
     [1] = "mod",
-    [0] = "user"
+    [2] = "admin",
+    [3] = "superadmin",
+    [4] = "dev"
 }
 
 Config.Items = {

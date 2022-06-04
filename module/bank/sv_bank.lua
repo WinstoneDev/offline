@@ -148,7 +148,7 @@ Offline.Bank.GetAccount = function(id)
     return account
 end
 
-Offline.Bank.AddTransaction = function(account, amount, message, type, player)
+Offline.Bank.AddTransaction = function(account, amount, message, type)
     local player = Offline.GetPlayerFromId(source)
     local transaction = {
         amount = amount,
@@ -167,7 +167,7 @@ Offline.Bank.AddTransaction = function(account, amount, message, type, player)
     Offline.SendEventToClient('offline:receiveBankAccounts', player.source, Offline.Bank.BankAccounts)
 end
 
-Offline.Bank.UpdateAccount = function(account, amount, player)
+Offline.Bank.UpdateAccount = function(account, amount)
     local player = Offline.GetPlayerFromId(source)
     account.amountMoney = amount
     MySQL.Async.execute('UPDATE bankaccounts SET amountMoney = @amountMoney WHERE id = @id', {
@@ -186,8 +186,8 @@ Offline.RegisterServerEvent('offline:BankAddMoney', function(amount, id)
     if account ~= nil then
         if Offline.Money.GetPlayerMoney(player) >= tonumber(amount) then
             Offline.Money.RemovePlayerMoney(player, amount)
-            Offline.Bank.UpdateAccount(account, account.amountMoney + amount, player)
-            Offline.Bank.AddTransaction(account, amount, 'Ajout de '..amount..'$', 'Dépôt', player)
+            Offline.Bank.UpdateAccount(account, account.amountMoney + amount)
+            Offline.Bank.AddTransaction(account, amount, 'Ajout de '..amount..'$', 'Dépôt')
             Offline.SendEventToClient('offline:notify', player.source, '~r~Maze Bank~s~\nVous avez ajouté ~g~' .. amount .. '$~s~ à votre compte.')
         else
             Offline.SendEventToClient('offline:notify', player.source, '~r~Maze Bank~s~\nVous n\'avez pas assez d\'argent.')
@@ -199,8 +199,8 @@ Offline.RegisterServerEvent('offline:BankwithdrawMoney', function(amount, id)
     local player = Offline.GetPlayerFromId(source)
     local account = Offline.Bank.GetAccount(id)
     if tonumber(account.amountMoney) >= tonumber(amount) then
-        Offline.Bank.AddTransaction(account, amount, 'Retrait de ' .. amount .. '$', 'Retrait', player)
-        Offline.Bank.UpdateAccount(account, account.amountMoney - amount, player)
+        Offline.Bank.AddTransaction(account, amount, 'Retrait de ' .. amount .. '$', 'Retrait')
+        Offline.Bank.UpdateAccount(account, account.amountMoney - amount)
         Offline.Money.AddPlayerMoney(player, amount)
         Offline.SendEventToClient('offline:notify', player.source, '~r~Maze Bank~s~\nVous avez retiré ~g~' .. amount .. '$~s~ avec succès.')
     else

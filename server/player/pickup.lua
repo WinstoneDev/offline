@@ -1,3 +1,4 @@
+---@class Offline.Pickup
 Offline.Pickup = {}
 Offline.PickupId = 0
 

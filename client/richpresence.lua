@@ -7,10 +7,10 @@ end)
 Citizen.CreateThread(function()
     Wait(5000)
     Offline.SendEventToServer('offline:updateNumberPlayer')
+    Wait(500)
 	while true do
-        local time = 0 
+        local time = 20000
         if CountPlayers ~= nil then
-            time = 20000
             Offline.SendEventToServer('offline:updateNumberPlayer')
             SetDiscordAppId(Config.DiscordStatus["ID"])
             SetDiscordRichPresenceAsset(Config.DiscordStatus["LargeIcon"])

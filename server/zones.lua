@@ -1,5 +1,22 @@
+---@class Offline.RegisteredZones
 Offline.RegisteredZones = {}
 
+---RegisterZone
+---@type function
+---@param name string
+---@param coords table
+---@param interactFunc function
+---@param drawDist number
+---@param drawMarker boolean
+---@param markerInfos table
+---@param drawBlip boolean
+---@param blipInfos table
+---@param drawNotification boolean
+---@param notificationInfos table
+---@param drawPed boolean
+---@param pedInfos table
+---@return any
+---@public
 Offline.RegisterZone = function(name, coords, interactFunc, drawDist, drawMarker, markerInfos, drawBlip, blipInfos, drawNotification, notificationInfos, drawPed, pedInfos)
     if not name then return end
     if not coords then return end
@@ -60,6 +77,11 @@ Citizen.CreateThread(function()
     end
 end)
 
+---RegisterPeds
+---@type function
+---@param zones table
+---@return any
+---@public
 Offline.RegisterPeds = function(zones)
     for name, zone in pairs(zones) do
         if zone.drawPed then

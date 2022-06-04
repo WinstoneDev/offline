@@ -17,11 +17,11 @@ paymentMenu.cardsMenu:AcceptFilter(true)
 paymentMenu.resumeTransactionMenu = RageUI.CreateSubMenu(paymentMenu.mainMenu, " ", "Résumé de la transaction")
 paymentMenu.resumeTransactionMenu:DisplayGlare(false)
 
-Offline.RegisterClientEvent('offline:openPaymentMenu', function(transactionMessage, price, inventory)
-    paymentMenu.openPaymentMenu(transactionMessage, price, inventory)
+Offline.RegisterClientEvent('offline:openPaymentMenu', function(transactionMessage, price, inventory, actions)
+    paymentMenu.openPaymentMenu(transactionMessage, price, inventory, actions)
 end)
 
-paymentMenu.openPaymentMenu = function(transactionMessage, price, inventory)
+paymentMenu.openPaymentMenu = function(transactionMessage, price, inventory, actions)
     if RageUI.GetInMenu() then
         RageUI.CloseAll()
     end
@@ -85,9 +85,9 @@ paymentMenu.openPaymentMenu = function(transactionMessage, price, inventory)
                 RageUI.Button('Valider', nil, {}, true, {
                     onSelected = function()
                         if paymentMenu.paymentType == "money" then
-                            Offline.SendEventToServer('offline:pay', nil, price, paymentMenu.paymentType)
+                            Offline.SendEventToServer('offline:pay', nil, price, paymentMenu.paymentType, actions)
                         elseif paymentMenu.paymentType == "bank" then
-                            Offline.SendEventToServer('offline:pay', paymentMenu.codePinProvided, price, paymentMenu.paymentType, paymentMenu.cardInfos)
+                            Offline.SendEventToServer('offline:pay', paymentMenu.codePinProvided, price, paymentMenu.paymentType, paymentMenu.cardInfos, actions)
                         end
                         paymentMenu.opened = false
                         paymentMenu.paymentType = nil
@@ -100,3 +100,20 @@ paymentMenu.openPaymentMenu = function(transactionMessage, price, inventory)
         end
     end)
 end
+
+Offline.RegisterClientEvent('offline:doActionsPayment', function(sucess, actions)
+    if sucess then
+        print(json.encode(actions))
+        if (actions.onSucess ~= nil) then
+            Citizen.CreateThread(function()
+                actions.onSucess()
+            end)
+        end
+    else
+        if (actions.onFailed ~= nil) then
+            Citizen.CreateThread(function()
+                actions.onFailed()
+            end)
+        end
+    end
+end)

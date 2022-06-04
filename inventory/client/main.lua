@@ -87,8 +87,10 @@ RegisterNUICallback("GetNearPlayers", function(data, cb)
     local target = GetNearbyPlayer(3.0)
     if target then
         closeInventory()
-
         if data.item.type == "item_standard" then
+            if data.item.name == "carte" then
+                RageUI.CloseAll()
+            end
            Offline.SendEventToServer('offline:transfer', {
                 name = data.item.name,
                 count = data.number,
@@ -101,7 +103,6 @@ RegisterNUICallback("GetNearPlayers", function(data, cb)
                 TaskPlayAnim(PlayerPedId(), "mp_common", "givetake2_a", 2.0, -2.0, 2500, 49, 0, false, false, false)
             end)
         end
-
         Wait(250)
         loadPlayerInventory(currentMenu)
     end

@@ -1,3 +1,4 @@
+---@class Offline.Inventory
 Offline.Inventory = {}
 Offline.Inventory.ActionItems = {}
 Offline.ItemsId = {}
@@ -15,6 +16,10 @@ MySQL.ready(function()
     end)
 end)
 
+---GiveUniqueId
+---@type function
+---@return number
+---@public
 Offline.Inventory.GiveUniqueId = function()
     local uniqueId = math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)
 
@@ -26,6 +31,10 @@ Offline.Inventory.GiveUniqueId = function()
     end
 end
 
+---GetAllItems
+---@type function
+---@return table
+---@public
 Offline.Inventory.GetAllItems = function()
     local items = {}
     for key, value in pairs(Config.Items) do
@@ -34,6 +43,11 @@ Offline.Inventory.GetAllItems = function()
     return items
 end
 
+---DoesItemExists
+---@type function
+---@param item string
+---@return boolean
+---@public
 Offline.Inventory.DoesItemExists = function(item)
     if not item then return false end
     if Config.Items[item] then
@@ -43,6 +57,11 @@ Offline.Inventory.DoesItemExists = function(item)
     end
 end
 
+---GetInfosItem
+---@type function
+---@param item string
+---@return table
+---@public
 Offline.Inventory.GetInfosItem = function(item)
     if not item then return end
     if Config.Items[item] and Offline.Inventory.DoesItemExists(item) then
@@ -52,6 +71,11 @@ Offline.Inventory.GetInfosItem = function(item)
     end
 end
 
+---GetInventoryWeight
+---@type function
+---@param inventory table
+---@return number
+---@public
 Offline.Inventory.GetInventoryWeight = function(inventory)
     if not inventory then return end
     local weight = 0
@@ -62,6 +86,12 @@ Offline.Inventory.GetInventoryWeight = function(inventory)
     return weight
 end
 
+---GetInventoryItem
+---@type function
+---@param player table
+---@param item string
+---@return table
+---@public
 Offline.Inventory.GetInventoryItem = function(player, item)
     if not item then return end
     local count = 0
@@ -82,6 +112,13 @@ Offline.Inventory.GetInventoryItem = function(player, item)
     end
 end
 
+---CanCarryItem
+---@type function
+---@param player table
+---@param item string
+---@param quantity number
+---@return boolean
+---@public
 Offline.Inventory.CanCarryItem = function(player, item, quantity)
     if not player then return end
     if not item then return end
@@ -96,6 +133,15 @@ Offline.Inventory.CanCarryItem = function(player, item, quantity)
     end
 end
 
+---AddItemInInventory
+---@type function
+---@param player table
+---@param item string
+---@param quantity number
+---@param newLabel string
+---@param uniqueId number
+---@param data table
+---@return any
 Offline.Inventory.AddItemInInventory = function(player, item, quantity, newlabel, uniqueId, data)
     if not player then return end
     if not item then return end
@@ -140,8 +186,14 @@ Offline.Inventory.AddItemInInventory = function(player, item, quantity, newlabel
     end
 end
 
-
-
+---RemoveItemInInventory
+---@type function
+---@param player table
+---@param item string
+---@param quantity number
+---@param itemLabel string
+---@return any
+---@public
 Offline.Inventory.RemoveItemInInventory = function(player, item, quantity, itemLabel)
     if not player then return end
     if not item then return end
@@ -187,6 +239,16 @@ Offline.Inventory.RemoveItemInInventory = function(player, item, quantity, itemL
     Offline.SendEventToClient('UpdatePlayer', player.source, player)
 end
 
+---RenameItemLabel
+---@type function
+---@param player table
+---@param name string
+---@param lastLabel string
+---@param newLabel string
+---@param quantity number
+---@param uniqueId number
+---@return any
+---@public
 Offline.Inventory.RenameItemLabel = function(player, name, lastLabel, newLabel, quantity, uniqueId)
     if not player then return end
     if not name then return end
@@ -239,10 +301,22 @@ Offline.Inventory.RenameItemLabel = function(player, name, lastLabel, newLabel, 
     Offline.SendEventToClient('UpdatePlayer', player.source, player)
 end
 
+---RegisterUsableItem
+---@type function
+---@param item string
+---@param callback function
+---@return any
+---@public
 Offline.RegisterUsableItem = function(item, cb)
 	Offline.Inventory.ActionItems[item] = cb
 end
 
+---UseItem
+---@type function
+---@param item string
+---@param ... any
+---@return any
+---@public
 Offline.UseItem = function(item, ...)
     if Offline.Inventory.ActionItems[item] then
 	    Offline.Inventory.ActionItems[item](...)

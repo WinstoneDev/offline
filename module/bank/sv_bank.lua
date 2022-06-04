@@ -149,7 +149,8 @@ Offline.Bank.GetAccount = function(id)
 end
 
 Offline.Bank.AddTransaction = function(account, amount, message, type)
-    local player = Offline.GetPlayerFromId(source)
+    local _src = source
+    local player = Offline.GetPlayerFromId(_src)
     local transaction = {
         amount = amount,
         type = type,
@@ -164,11 +165,12 @@ Offline.Bank.AddTransaction = function(account, amount, message, type)
     Wait(150)
     Offline.Bank.GetAllAccounts()
     Wait(150)
-    Offline.SendEventToClient('offline:receiveBankAccounts', player.source, Offline.Bank.BankAccounts)
+    Offline.SendEventToClient('offline:receiveBankAccounts', _src, Offline.Bank.BankAccounts)
 end
 
 Offline.Bank.UpdateAccount = function(account, amount)
-    local player = Offline.GetPlayerFromId(source)
+    local _src = source
+    local player = Offline.GetPlayerFromId(_src)
     account.amountMoney = amount
     MySQL.Async.execute('UPDATE bankaccounts SET amountMoney = @amountMoney WHERE id = @id', {
         ['@id'] = account.id,
@@ -177,7 +179,7 @@ Offline.Bank.UpdateAccount = function(account, amount)
     Wait(150)
     Offline.Bank.GetAllAccounts()
     Wait(150)
-    Offline.SendEventToClient('offline:receiveBankAccounts', player.source, Offline.Bank.BankAccounts)
+    Offline.SendEventToClient('offline:receiveBankAccounts', _src, Offline.Bank.BankAccounts)
 end
 
 Offline.RegisterServerEvent('offline:BankAddMoney', function(amount, id)

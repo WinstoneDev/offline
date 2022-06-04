@@ -1,8 +1,9 @@
-local paymentMenu = {
+paymentMenu = {
     opened = false,
     paymentType = nil,
     codePinProvided = nil,
-    cardInfos = nil
+    cardInfos = nil,
+    actions = {}
 }
 
 paymentMenu.mainMenu = RageUI.CreateMenu(" ", "Offline~g~Pay~s~™", nil, 100, "root_cause", "shopui_title_mazebank")
@@ -17,11 +18,11 @@ paymentMenu.cardsMenu:AcceptFilter(true)
 paymentMenu.resumeTransactionMenu = RageUI.CreateSubMenu(paymentMenu.mainMenu, " ", "Résumé de la transaction")
 paymentMenu.resumeTransactionMenu:DisplayGlare(false)
 
-Offline.RegisterClientEvent('offline:openPaymentMenu', function(transactionMessage, price, inventory, actions)
-    paymentMenu.openPaymentMenu(transactionMessage, price, inventory, actions)
+Offline.RegisterClientEvent('offline:openPaymentMenu', function(transactionMessage, price, inventory)
+    paymentMenu.openPaymentMenu(transactionMessage, price, inventory)
 end)
 
-paymentMenu.openPaymentMenu = function(transactionMessage, price, inventory, actions)
+paymentMenu.openPaymentMenu = function(transactionMessage, price, inventory)
     if RageUI.GetInMenu() then
         RageUI.CloseAll()
     end
@@ -85,9 +86,9 @@ paymentMenu.openPaymentMenu = function(transactionMessage, price, inventory, act
                 RageUI.Button('Valider', nil, {}, true, {
                     onSelected = function()
                         if paymentMenu.paymentType == "money" then
-                            Offline.SendEventToServer('offline:pay', nil, price, paymentMenu.paymentType, actions)
+                            Offline.SendEventToServer('offline:pay', nil, price, paymentMenu.paymentType, nil, transactionMessage)
                         elseif paymentMenu.paymentType == "bank" then
-                            Offline.SendEventToServer('offline:pay', paymentMenu.codePinProvided, price, paymentMenu.paymentType, paymentMenu.cardInfos, actions)
+                            Offline.SendEventToServer('offline:pay', paymentMenu.codePinProvided, price, paymentMenu.paymentType, paymentMenu.cardInfos, transactionMessage)
                         end
                         paymentMenu.opened = false
                         paymentMenu.paymentType = nil
@@ -101,18 +102,19 @@ paymentMenu.openPaymentMenu = function(transactionMessage, price, inventory, act
     end)
 end
 
-Offline.RegisterClientEvent('offline:doActionsPayment', function(sucess, actions)
+Offline.RegisterClientEvent('offline:doActionsPayment', function(sucess)
     if sucess then
-        print(json.encode(actions))
-        if (actions.onSucess ~= nil) then
+        if (paymentMenu.actions.onSucess ~= nil) then
             Citizen.CreateThread(function()
-                actions.onSucess()
+                paymentMenu.actions.onSucess()
+                paymentMenu.actions = {}
             end)
         end
     else
-        if (actions.onFailed ~= nil) then
+        if (paymentMenu.actions.onFailed ~= nil) then
             Citizen.CreateThread(function()
-                actions.onFailed()
+                paymentMenu.actions.onFailed()
+                paymentMenu.actions = {}
             end)
         end
     end

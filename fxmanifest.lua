@@ -39,9 +39,9 @@ client_scripts {
     'module/skincreator/cl_charcreator.lua',
     'module/utils/blips.lua',
     'module/identity/cl_identity.lua',
-    'module/clothshop/cl_clothshop.lua',
     'module/bank/cl_bank.lua',
-    'module/bank/cl_paymentMenu.lua'
+    'module/bank/cl_paymentMenu.lua',
+    'module/clothshop/cl_clothshop.lua'
 }
 
 shared_scripts {
@@ -60,9 +60,9 @@ server_scripts {
     'module/adminmenu/sv_admin.lua',
     'module/skincreator/sv_charcreator.lua',
     'module/identity/sv_identity.lua',
-    'module/clothshop/sv_clothshop.lua',
     'module/bank/sv_bank.lua',
-    'module/bank/sv_paymentMenu.lua'
+    'module/bank/sv_paymentMenu.lua',
+    'module/clothshop/sv_clothshop.lua'
 }
 
 exports {

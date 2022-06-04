@@ -114,22 +114,20 @@ function Clothes:OpenMenu(header)
                                 Offline.TriggerLocalEvent('skinchanger:change', 'pants_2', Clothes.TableShirt[i] - 1)
                             end,
                             onSelected = function()
-                                local message = 'Achat d\'un pantalon'
-                                Offline.SendEventToServer('offline:attemptToPayMenu', message, 30, {
+                                local message = 'Achat d\'un pantalon '..i
+                                Offline.SendEventToServer('offline:attemptToPayMenu', message, 30)
+                                paymentMenu.actions = {
                                     onSucess = function()
-                                        print('negro')
-                                        RageUI.CloseAll()
-                                         Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
-                                             Offline.SendEventToServer('offline:AddClothesInInventory', 'pants', 'Pantalon '..i, {skin.pants_1, skin.pants_2})
-                                         end)
+                                        Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
+                                            Offline.SendEventToServer('offline:AddClothesInInventory', 'pants', 'Pantalon '..i, {skin.pants_1, skin.pants_2})
+                                        end)
                                     end,
                                     onFailed = function()
-                                        print('negro')
                                         RageUI.CloseAll()
                                         Clothes.opened = true
                                         RageUI.Visible(Clothes.mainMenu, true)
                                     end
-                                })
+                                }
                             end,
                             onActive = function()
                                 Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)

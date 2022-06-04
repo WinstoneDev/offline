@@ -155,15 +155,15 @@ end
 Offline.UseServerEvent = function(eventName, src, ...)
     if Offline.Event[eventName] then
         if eventName ~= "offline:updateNumberPlayer" and eventName ~= "DropInjectorDetected" then
-            if not Offline.PlayersLimit[eventName] then 
+            if not Offline.PlayersLimit[eventName] then
                 Offline.PlayersLimit[eventName] = {}
             end
-            if not Offline.PlayersLimit[eventName][src] then 
+            if not Offline.PlayersLimit[eventName][src] then
                 Offline.PlayersLimit[eventName][src] = 1
             end
             Offline.PlayersLimit[eventName][src] = Offline.PlayersLimit[eventName][src] + 1
-            if Offline.PlayersLimit[eventName][src] >= Offline.RateLimit[eventName] then 
-                DropPlayer(src, 'Spam trigger detected ╭∩╮（︶_︶）╭∩╮ ('..eventName..')')
+            if Offline.PlayersLimit[eventName][src] >= Offline.RateLimit[eventName] then
+                --DropPlayer(src, 'Spam trigger detected ╭∩╮（︶_︶）╭∩╮ ('..eventName..')')
             else
                 Offline.Event[eventName](...)
             end

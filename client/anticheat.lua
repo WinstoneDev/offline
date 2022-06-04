@@ -8,58 +8,58 @@ Citizen.CreateThread( function()
     end
 end)
 
-RegisterCommand('p1', function()
-    createPedScreen()
-end)
-
-RegisterCommand('p2', function()
-    deletePedScreen()
-end)
-
-RegisterCommand('p3', function()
-    refreshPedScreen()
-end)
-
-function createPedScreen()  
-    CreateThread(function()
-        heading = GetEntityHeading(PlayerPedId())
-        SetFrontendActive(true)
-        ActivateFrontendMenu(GetHashKey("FE_MENU_VERSION_EMPTY_NO_BACKGROUND"), true, -1)
-        Citizen.Wait(100)
-        N_0x98215325a695e78a(false)
-
-        PlayerPedPreview = ClonePed(PlayerPedId(), heading, true, false)
-        local PosPedPreview = GetEntityCoords(PlayerPedPreview)
-        SetEntityCoords(PlayerPedPreview, PosPedPreview.x, PosPedPreview.y, PosPedPreview.z - 100)
-        FreezeEntityPosition(PlayerPedPreview, true)
-        SetEntityVisible(PlayerPedPreview, false, false)
-        NetworkSetEntityInvisibleToNetwork(PlayerPedPreview, false)
-        Wait(200)
-        SetPedAsNoLongerNeeded(PlayerPedPreview)
-        GivePedToPauseMenu(PlayerPedPreview, 1)
-        SetPauseMenuPedLighting(true)
-        SetPauseMenuPedSleepState(true)
-        ReplaceHudColourWithRgba(117, 0, 0, 0, 0)
-        previewPed = PlayerPedPreview
-    end)
-end
-
-function deletePedScreen()
-    if DoesEntityExist(previewPed) then
-        DeleteEntity(previewPed)
-        SetFrontendActive(false)
-        ReplaceHudColourWithRgba(117, 0, 0, 0, 190)
-        previewPed = nil
-    end
-end
-
-function refreshPedScreen()
-    if DoesEntityExist(previewPed) then
-        deletePedScreen()
-        Wait(200)
-        createPedScreen()
-    end
-end
+--RegisterCommand('p1', function()
+--    createPedScreen()
+--end)
+--
+--RegisterCommand('p2', function()
+--    deletePedScreen()
+--end)
+--
+--RegisterCommand('p3', function()
+--    refreshPedScreen()
+--end)
+--
+--function createPedScreen()
+--    CreateThread(function()
+--        heading = GetEntityHeading(PlayerPedId())
+--        SetFrontendActive(true)
+--        ActivateFrontendMenu(GetHashKey("FE_MENU_VERSION_EMPTY_NO_BACKGROUND"), true, -1)
+--        Citizen.Wait(100)
+--        N_0x98215325a695e78a(false)
+--
+--        PlayerPedPreview = ClonePed(PlayerPedId(), heading, true, false)
+--        local PosPedPreview = GetEntityCoords(PlayerPedPreview)
+--        SetEntityCoords(PlayerPedPreview, PosPedPreview.x, PosPedPreview.y, PosPedPreview.z - 100)
+--        FreezeEntityPosition(PlayerPedPreview, true)
+--        SetEntityVisible(PlayerPedPreview, false, false)
+--        NetworkSetEntityInvisibleToNetwork(PlayerPedPreview, false)
+--        Wait(200)
+--        SetPedAsNoLongerNeeded(PlayerPedPreview)
+--        GivePedToPauseMenu(PlayerPedPreview, 1)
+--        SetPauseMenuPedLighting(true)
+--        SetPauseMenuPedSleepState(true)
+--        ReplaceHudColourWithRgba(117, 0, 0, 0, 0)
+--        previewPed = PlayerPedPreview
+--    end)
+--end
+--
+--function deletePedScreen()
+--    if DoesEntityExist(previewPed) then
+--        DeleteEntity(previewPed)
+--        SetFrontendActive(false)
+--        ReplaceHudColourWithRgba(117, 0, 0, 0, 190)
+--        previewPed = nil
+--    end
+--end
+--
+--function refreshPedScreen()
+--    if DoesEntityExist(previewPed) then
+--        deletePedScreen()
+--        Wait(200)
+--        createPedScreen()
+--    end
+--end
 
 --
 

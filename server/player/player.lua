@@ -1,3 +1,4 @@
+---@class Offline.ServerPlayers
 Offline.ServerPlayers = {}
 
 local function GetPlayerDiscord(source)

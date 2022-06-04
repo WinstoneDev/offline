@@ -147,9 +147,20 @@ function Clothes:OpenMenu(header)
                                 Offline.TriggerLocalEvent('skinchanger:change', 'shoes_2', Clothes.TableShoes[i] - 1)
                             end,
                             onSelected = function()
-                                Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
-                                    Offline.SendEventToServer('offline:AddClothesInInventory', 'shoes', 'Chaussure '..i, {skin.shoes_1, skin.shoes_2})
-                                end)
+                                local message = 'Achat d\'une paire de chaussures '..i
+                                Offline.SendEventToServer('offline:attemptToPayMenu', message, 30)
+                                paymentMenu.actions = {
+                                    onSucess = function()
+                                        Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
+                                            Offline.SendEventToServer('offline:AddClothesInInventory', 'shoes', 'Chaussure '..i, {skin.shoes_1, skin.shoes_2})
+                                        end)
+                                    end,
+                                    onFailed = function()
+                                        RageUI.CloseAll()
+                                        Clothes.opened = true
+                                        RageUI.Visible(Clothes.mainMenu, true)
+                                    end
+                                }
                             end,
                             onActive = function()
                                 Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
@@ -169,9 +180,20 @@ function Clothes:OpenMenu(header)
                                 Offline.TriggerLocalEvent('skinchanger:change', 'bags_2', Clothes.TableSacs[i] - 1)
                             end,
                             onSelected = function()
-                                Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
-                                    Offline.SendEventToServer('offline:AddClothesInInventory', 'bags', 'Sacs '..i, {skin.bags_1, skin.bags_2})
-                                end)
+                                local message = 'Achat d\'un sac '..i
+                                Offline.SendEventToServer('offline:attemptToPayMenu', message, 30)
+                                paymentMenu.actions = {
+                                    onSucess = function()
+                                        Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
+                                            Offline.SendEventToServer('offline:AddClothesInInventory', 'bags', 'Sacs '..i, {skin.bags_1, skin.bags_2})
+                                        end)
+                                    end,
+                                    onFailed = function()
+                                        RageUI.CloseAll()
+                                        Clothes.opened = true
+                                        RageUI.Visible(Clothes.mainMenu, true)
+                                    end
+                                }
                             end,
                             onActive = function()
                                 Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)

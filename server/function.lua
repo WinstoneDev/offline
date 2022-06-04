@@ -1,3 +1,4 @@
+---@class Offline
 Offline = {}
 Offline.Math = {}
 Offline.Event = {}
@@ -27,7 +28,8 @@ Offline.RateLimit = {
     ['offline:BankCreateCard'] = 10,
     ['offline:BankwithdrawMoney'] = 10,
     ['offline:BankAddMoney'] = 10,
-    ['offline:attemptToPayMenu'] = 10
+    ['offline:attemptToPayMenu'] = 10,
+    ['offline:pay'] = 10
 }
 
 Citizen.CreateThread(function()
@@ -37,6 +39,11 @@ Citizen.CreateThread(function()
     end
 end)
 
+---GetPlayerFromId
+---@type function
+---@param id number
+---@return table
+---@public
 Offline.GetPlayerFromId = function(id)
     if not id then return end
     if Offline.ServerPlayers[id] then
@@ -46,6 +53,11 @@ Offline.GetPlayerFromId = function(id)
     end
 end
 
+---GetPlayerFromIdentifier
+---@type function
+---@param identifier string
+---@return table
+---@public
 Offline.GetPlayerFromIdentifier = function(identifier)
     if not identifier then return end
     for key, value in pairs(Offline.ServerPlayers) do
@@ -56,6 +68,11 @@ Offline.GetPlayerFromIdentifier = function(identifier)
     end
 end
 
+---GeneratorToken
+---@type function
+---@param _source number
+---@return string
+---@public
 Offline.GeneratorToken = function(_source)
 	local token = ""
 
@@ -69,6 +86,11 @@ Offline.GeneratorToken = function(_source)
     end
 end
 
+---GeneratorTokenConnecting
+---@type function
+---@param _source number
+---@return any
+---@public
 Offline.GeneratorTokenConnecting = function(_source)
     if not Offline.addTokenClient[_source] then
         Offline.addTokenClient[_source] = _source
@@ -92,6 +114,13 @@ Offline.GeneratorTokenConnecting = function(_source)
     end
 end
 
+---GeneratorNewToken
+---@type function
+---@param _source number
+---@param resourceName string
+---@param lastToken string
+---@return any
+---@public
 Offline.GeneratorNewToken = function(_source, resourceName, lastToken)
     token = Offline.GeneratorToken(_source)
 
@@ -101,6 +130,12 @@ Offline.GeneratorNewToken = function(_source, resourceName, lastToken)
     Offline.SendEventToClient("offline:addTokenEvent", _source, Offline.Resource[_source])
 end
 
+---RegisterServerEvent
+---@type function
+---@param eventName string
+---@param cb function
+---@return nil
+---@public
 Offline.RegisterServerEvent = function(eventName, cb)
     if not Offline.Event[eventName] then
 	    Offline.Event[eventName] = cb
@@ -110,6 +145,13 @@ Offline.RegisterServerEvent = function(eventName, cb)
     end
 end
 
+---UseServerEvent
+---@type function
+---@param eventName string
+---@param src number
+---@param ... any
+---@return any
+---@public
 Offline.UseServerEvent = function(eventName, src, ...)
     if Offline.Event[eventName] then
         if eventName ~= "offline:updateNumberPlayer" and eventName ~= "DropInjectorDetected" then
@@ -121,7 +163,7 @@ Offline.UseServerEvent = function(eventName, src, ...)
             end
             Offline.PlayersLimit[eventName][src] = Offline.PlayersLimit[eventName][src] + 1
             if Offline.PlayersLimit[eventName][src] >= Offline.RateLimit[eventName] then 
-                -- DropPlayer(src, 'Spam trigger detected ╭∩╮（︶_︶）╭∩╮ ('..eventName..')')
+                DropPlayer(src, 'Spam trigger detected ╭∩╮（︶_︶）╭∩╮ ('..eventName..')')
             else
                 Offline.Event[eventName](...)
             end
@@ -146,6 +188,12 @@ AddEventHandler("offline:useEvent", function(eventName, tokenResource, ...)
     end
 end)
 
+---TriggerLocalEvent
+---@type function
+---@param name string
+---@param ... any
+---@return any
+---@public
 Offline.TriggerLocalEvent = function(name, ...)
     local _source = source
     if not name then return end
@@ -153,6 +201,13 @@ Offline.TriggerLocalEvent = function(name, ...)
     Config.Development.Print("Successfully triggered event " .. name .. "from source ".. _source)
 end
 
+---SendEventToClient
+---@type function
+---@param name string
+---@param receiver number
+---@param ... any
+---@return any
+---@public
 Offline.SendEventToClient = function(name, receiver, ...)
     if not name then return end
     if not receiver then return end 
@@ -161,6 +216,12 @@ Offline.SendEventToClient = function(name, receiver, ...)
     Config.Development.Print("Successfully sent event " .. name .. " to client ".. receiver)
 end
 
+---AddEventHandler
+---@type function
+---@param name string
+---@param execute function
+---@return any
+---@public
 Offline.AddEventHandler = function(name, execute)
     if not name then return end
     if not execute then return end
@@ -170,6 +231,11 @@ Offline.AddEventHandler = function(name, execute)
     Config.Development.Print("Successfully added event " .. name)
 end
 
+---GetEntityCoords
+---@type function
+---@param entity number
+---@return table
+---@public
 Offline.GetEntityCoords = function(entity)
     if not entity then return end
     local _entity = GetEntityCoords(GetPlayerPed(entity))
@@ -190,6 +256,12 @@ Offline.RegisterServerEvent('DropInjectorDetected', function()
     DropPlayer(_src, 'Injector detected ╭∩╮（︶_︶）╭∩╮')
 end)
 
+---Round
+---@type function
+---@param value number
+---@param numDecimalPlaces number
+---@return number
+---@public
 Offline.Math.Round = function(value, numDecimalPlaces)
     if numDecimalPlaces then
         local power = 10^numDecimalPlaces
@@ -199,6 +271,11 @@ Offline.Math.Round = function(value, numDecimalPlaces)
     end
 end
 
+---ConverToBoolean
+---@type function
+---@param number number
+---@return boolean
+---@public
 Offline.ConverToBoolean = function(number)
     if number == 0 then
         return false
@@ -207,6 +284,11 @@ Offline.ConverToBoolean = function(number)
     end
 end
 
+---ConverToNumber
+---@type function
+---@param boolean boolean
+---@return number
+---@public
 Offline.ConverToNumber = function(boolean)
     if boolean == false then
         return 0
@@ -215,34 +297,15 @@ Offline.ConverToNumber = function(boolean)
     end
 end
 
+---SpawnPed
+---@type function
+---@param hash string
+---@param coords table
+---@param anim number
+---@return void
+---@public
 Offline.SpawnPed = function(hash, coords, anim)
     local ped = CreatePed(4, hash, coords, false, false)
     FreezeEntityPosition(ped, true) 
     return ped
 end
-
-DiscordErrorType = {
-    GOOD = 200,
-    ERROR_NO_CONTENT = 204,
-    BAD_REQUEST = 400,
-    UNAUTHORIZED = 401,
-    FORBIDDEN = 403,
-    NOT_FOUND = 404,
-    METHOD_NOT_ALLOWED = 405,
-    TOO_MANY_REQUESTS = 429,
-    INTERNAL_ERROR = 500,
-    API_DOWN = 502,
-}
-
-function _getDiscordErrorType(code)
-    for key, value in pairs(DiscordErrorType) do
-        if value == code then
-            return tostring(key)
-            break
-        else
-            return "Unknown"
-        end
-    end
-end
-
-print(_getDiscordErrorType(502))

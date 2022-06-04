@@ -132,5 +132,5 @@ Offline.Commands.RegisterCommand('clearall', 3, function(player, args, showError
 end, {help = "Clear le chat pour tout le monde"}, false)
 
 Offline.Commands.RegisterCommand('announce', 3, function(player, args, showError)
-	Offline.SendEventToClient('offline:notify', -1, '~r~Annonce Serveur~s~\n'..table.concat(args, " "))
+	Offline.SendEventToClient('offline:notify', -1, '~b~Annonce Serveur~s~\n'..table.concat(args, " "))
 end, {help = "Affiche un message pour tout le serveur", arguments = {{name = 'message', help = 'Message', type = 'fullstring'}}}, false)

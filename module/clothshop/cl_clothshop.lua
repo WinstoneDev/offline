@@ -185,7 +185,7 @@ function Clothes:OpenMenu(header)
                                 paymentMenu.actions = {
                                     onSucess = function()
                                         Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
-                                            Offline.SendEventToServer('offline:AddClothesInInventory', 'bags', 'Sacs '..i, {skin.bags_1, skin.bags_2})
+                                            Offline.SendEventToServer('offline:AddClothesInInventory', 'bag', 'Sac '..i, {skin.bags_1, skin.bags_2})
                                         end)
                                     end,
                                     onFailed = function()

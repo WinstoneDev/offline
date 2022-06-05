@@ -59,7 +59,8 @@ Config.Items = {
     ['glasses'] = {label = "Lunette", weight = 0.005, props = "prop_cs_sol_glasses"},
     ['chain'] = {label = "Chaine", weight = 0.005, props = "prop_cs_box_clothes"},
     ['bags'] = {label = "Sacs", weight = 0.005, props = "prop_cs_box_clothes"},
-    ['helmet'] = {label = "Chapeau", weight = 0.005, props = "prop_cs_box_clothes"}
+    ['helmet'] = {label = "Chapeau", weight = 0.005, props = "prop_cs_box_clothes"},
+    ['tie'] = {label = "Lunettes", weight = 0.005, props = "prop_cs_box_clothes"},
 }
 
 Config.InsertItems = {
@@ -76,7 +77,8 @@ Config.InsertItems = {
     ['glasses'] = true,
     ['chain'] = true,
     ['bags'] = true,
-    ['helmet'] = true
+    ['helmet'] = true,
+    ['tie'] = true
 }
 
 Config.ResourcesClientEvent = {

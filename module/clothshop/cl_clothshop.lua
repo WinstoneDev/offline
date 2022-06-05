@@ -1,5 +1,6 @@
 local Clothes = {
     TableChapeau = {},
+    TableLunettes = {},
     TablePantalon = {},
     TableShoes = {},
     TableSacs = {},
@@ -108,6 +109,9 @@ function Clothes:OpenMenu(header)
             end
             for i = 0, max.helmet_1, 1 do
                 Clothes.TableChapeau[i] = 1
+            end
+            for i = 0, max.glasses_1, 1 do
+                Clothes.TableLunettes[i] = 1
             end
         end)
         Wait(550)
@@ -259,6 +263,39 @@ function Clothes:OpenMenu(header)
                                 Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
                                     if tonumber(skin.helmet_1) ~= tonumber(i) then
                                         Offline.TriggerLocalEvent('skinchanger:change', 'helmet_1', i)
+                                    end
+                                end)
+                            end,
+                        })
+                    end
+                end)
+                RageUI.IsVisible(Clothes.subMenu9, function()
+                    for i = 0, maxVals['glasses_1'], 1 do
+                        RageUI.List("Lunettes #"..i, Clothes.Variations, Clothes.TableLunettes[i], nil, {RightLabel = "~g~30$"}, true, {
+                            onListChange = function(Index)
+                                Clothes.TableLunettes[i] = Index
+                                Offline.TriggerLocalEvent('skinchanger:change', 'glasses_2', Clothes.TableLunettes[i] - 1)
+                            end,
+                            onSelected = function()
+                                local message = 'Achat d\'une paire de lunettes '..i
+                                Offline.SendEventToServer('offline:attemptToPayMenu', message, 30)
+                                paymentMenu.actions = {
+                                    onSucess = function()
+                                        Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
+                                            Offline.SendEventToServer('offline:AddClothesInInventory', 'tie', 'Chapeau '..i, {skin.glasses_1, skin.glasses_2})
+                                        end)
+                                    end,
+                                    onFailed = function()
+                                        RageUI.CloseAll()
+                                        Clothes.opened = true
+                                        RageUI.Visible(Clothes.mainMenu, true)
+                                    end
+                                }
+                            end,
+                            onActive = function()
+                                Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
+                                    if tonumber(skin.helmet_1) ~= tonumber(i) then
+                                        Offline.TriggerLocalEvent('skinchanger:change', 'glasses_1', i)
                                     end
                                 end)
                             end,

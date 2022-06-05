@@ -18,7 +18,7 @@ local ItemVetement = {
     ['chain'] = {-1, 0},
     ['bags'] = {-1, 0},
     ['helmet'] = {-1, 0},
-    ['tie'] = {-1, 0}
+    ['glasses'] = {-1, 0}
 }
 
 function DisableControlInventory()
@@ -206,6 +206,8 @@ RegisterNUICallback("UseItem", function(data, cb)
                         skins["glasses"] = {skin.glasses_1, skin.glasses_2}
                         skins["chain"] = {skin.chain_1, skin.chain_2}
                         skins["bags"] = {skin.bags_1, skin.bags_2}
+                        skins['helmet'] = {skin.helmet_1, skin.helmet_2}
+                        skins['glasses'] = {skin.glasses_1, skin.glasses_2}
                     end)
 
                     if skins[data.item.name][1] ~= data.item.data[1] or skins[data.item.name][2] ~= data.item.data[2] then

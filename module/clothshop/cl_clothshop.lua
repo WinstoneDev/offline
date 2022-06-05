@@ -11,14 +11,20 @@ function Clothes:loadLastSkin()
     TriggerEvent('skinchanger:loadSkin', Clothes.LastSkin) 
 end
 
-Clothes.mainMenu = RageUI.CreateMenu("", "Binco")
-Clothes.subMenu = RageUI.CreateSubMenu(Clothes.mainMenu, "", "Binco")
-Clothes.subMenu2 = RageUI.CreateSubMenu(Clothes.mainMenu, "", "Binco")
-Clothes.subMenu3 = RageUI.CreateSubMenu(Clothes.mainMenu, "", "Binco")
-Clothes.subMenu4 = RageUI.CreateSubMenu(Clothes.mainMenu, "", "Binco")
-Clothes.subMenu5 = RageUI.CreateSubMenu(Clothes.mainMenu, "", "Binco")
-Clothes.subMenu6 = RageUI.CreateSubMenu(Clothes.mainMenu, "", "Binco")
-Clothes.subMenu7 = RageUI.CreateSubMenu(Clothes.mainMenu, "", "Binco")
+Clothes.mainMenu = RageUI.CreateMenu("", " ")
+Clothes.subMenu = RageUI.CreateSubMenu(Clothes.mainMenu, "", " ")
+Clothes.subMenu2 = RageUI.CreateSubMenu(Clothes.mainMenu, "", " ")
+Clothes.subMenu3 = RageUI.CreateSubMenu(Clothes.mainMenu, "", " ")
+Clothes.subMenu4 = RageUI.CreateSubMenu(Clothes.mainMenu, "", " ")
+Clothes.subMenu5 = RageUI.CreateSubMenu(Clothes.mainMenu, "", " ")
+Clothes.subMenu6 = RageUI.CreateSubMenu(Clothes.mainMenu, "", " ")
+Clothes.subMenu7 = RageUI.CreateSubMenu(Clothes.mainMenu, "", " ")
+Clothes.subMenu8 = RageUI.CreateSubMenu(Clothes.subMenu2, "", " ")
+Clothes.subMenu9 = RageUI.CreateSubMenu(Clothes.subMenu2, "", " ")
+Clothes.subMenu10 = RageUI.CreateSubMenu(Clothes.subMenu2, "", " ")
+Clothes.subMenu11 = RageUI.CreateSubMenu(Clothes.subMenu2, "", " ")
+Clothes.subMenu12 = RageUI.CreateSubMenu(Clothes.subMenu2, "", " ")
+Clothes.subMenu13 = RageUI.CreateSubMenu(Clothes.subMenu2, "", " ")
 
 Clothes.mainMenu:DisplayGlare(false)
 Clothes.subMenu:DisplayGlare(false)
@@ -35,6 +41,12 @@ Clothes.subMenu4:AcceptFilter(true)
 Clothes.subMenu5:AcceptFilter(true)
 Clothes.subMenu6:AcceptFilter(true)
 Clothes.subMenu7:AcceptFilter(true)
+Clothes.subMenu8:AcceptFilter(true)
+Clothes.subMenu9:AcceptFilter(true)
+Clothes.subMenu10:AcceptFilter(true)
+Clothes.subMenu11:AcceptFilter(true)
+Clothes.subMenu12:AcceptFilter(true)
+Clothes.subMenu13:AcceptFilter(true)
 
 Clothes.mainMenu.Closed = function()
     Clothes.opened = false
@@ -58,6 +70,12 @@ function Clothes:OpenMenu(header)
         Clothes.subMenu5:SetSpriteBanner(header, header)
         Clothes.subMenu6:SetSpriteBanner(header, header)
         Clothes.subMenu7:SetSpriteBanner(header, header)
+        Clothes.subMenu8:SetSpriteBanner(header, header)
+        Clothes.subMenu9:SetSpriteBanner(header, header)
+        Clothes.subMenu10:SetSpriteBanner(header, header)
+        Clothes.subMenu11:SetSpriteBanner(header, header)
+        Clothes.subMenu12:SetSpriteBanner(header, header)
+        Clothes.subMenu13:SetSpriteBanner(header, header)
         Clothes.opened = true
         RageUI.Visible(Clothes.mainMenu, true)
         Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
@@ -88,16 +106,19 @@ function Clothes:OpenMenu(header)
             for i = 0, max.bags_1, 1 do
                 Clothes.TableSacs[i] = 1
             end
+            for i = 0, max.helmet_1, 1 do
+                Clothes.TableChapeau[i] = 1
+            end
         end)
         Wait(550)
         CreateThread(function()
             while Clothes.opened do
                 RageUI.IsVisible(Clothes.mainMenu, function()
                     RageUI.Button('Hauts', nil, {}, true, {}, Clothes.subMenu)
+                    RageUI.Button('Accessoires', nil, {}, true, {}, Clothes.subMenu2)
                     RageUI.Button('Pantalons', nil, {}, true, {}, Clothes.subMenu3)
                     RageUI.Button('Chaussures', nil, {}, true, {}, Clothes.subMenu4)
                     RageUI.Button('Sacs', nil, {}, true, {}, Clothes.subMenu5)
-                    RageUI.Button('Accessoires', nil, {}, true, {}, Clothes.subMenu2)
                     RageUI.Button('Badge', nil, {}, true, {}, Clothes.subMenu6)
                     RageUI.Button('Objets', nil, {}, true, {}, Clothes.subMenu7)
                 end)
@@ -105,37 +126,12 @@ function Clothes:OpenMenu(header)
 
                 end)
                 RageUI.IsVisible(Clothes.subMenu2, function()
-                    for i = 0, maxVals['helmet_1'], 1 do
-                        RageUI.List("Chapeau #"..i, Clothes.Variations, Clothes.TableChapeau[i], nil, { RightLabel = "~g~30$"}, true, {
-                            onListChange = function(Index)
-                                Clothes.TableChapeau[i] = Index
-                                Offline.TriggerLocalEvent('skinchanger:change', 'helmet_2', Clothes.TableChapeau[i] - 1)
-                            end,
-                            onSelected = function()
-                                local message = 'Achat d\'un chapeau '..i
-                                Offline.SendEventToServer('offline:attemptToPayMenu', message, 30)
-                                paymentMenu.actions = {
-                                    onSucess = function()
-                                        Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
-                                            Offline.SendEventToServer('offline:AddClothesInInventory', 'pants', 'Pantalon '..i, {skin.pants_1, skin.pants_2})
-                                        end)
-                                    end,
-                                    onFailed = function()
-                                        RageUI.CloseAll()
-                                        Clothes.opened = true
-                                        RageUI.Visible(Clothes.mainMenu, true)
-                                    end
-                                }
-                            end,
-                            onActive = function()
-                                Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
-                                    if tonumber(skin.pants_1) ~= tonumber(i) then
-                                        Offline.TriggerLocalEvent('skinchanger:change', 'pants_1', i)
-                                    end
-                                end)
-                            end,
-                        })
-                    end
+                    RageUI.Button('Chapeaux', nil, {}, true, {}, Clothes.subMenu8)
+                    RageUI.Button('Lunettes', nil, {}, true, {}, Clothes.subMenu9)
+                    RageUI.Button('Boucles d\'oreilles', nil, {}, true, {}, Clothes.subMenu10)
+                    RageUI.Button('Montres', nil, {}, true, {}, Clothes.subMenu11)
+                    RageUI.Button('Bracelets', nil, {}, true, {}, Clothes.subMenu12)
+                    RageUI.Button('Chaînes', nil, {}, true, {}, Clothes.subMenu13)
                 end)
                 RageUI.IsVisible(Clothes.subMenu3, function()
                     for i = 0, maxVals['pants_1'], 1 do          
@@ -172,7 +168,7 @@ function Clothes:OpenMenu(header)
                 end)
                 RageUI.IsVisible(Clothes.subMenu4, function()
                     for i = 0, maxVals['shoes_1'], 1 do          
-                        RageUI.List("Chaussure #"..i, Clothes.Variations, Clothes.TableShoes[i], nil, {RightLabel = "~g~30$"}, true, {
+                        RageUI.List("Chaussures #"..i, Clothes.Variations, Clothes.TableShoes[i], nil, {RightLabel = "~g~30$"}, true, {
                             onListChange = function(Index)
                                 Clothes.TableShoes[i] = Index
                                 Offline.TriggerLocalEvent('skinchanger:change', 'shoes_2', Clothes.TableShoes[i] - 1)
@@ -230,6 +226,39 @@ function Clothes:OpenMenu(header)
                                 Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
                                     if tonumber(skin.bags_1) ~= tonumber(i) then
                                         Offline.TriggerLocalEvent('skinchanger:change', 'bags_1', i)
+                                    end
+                                end)
+                            end,
+                        })
+                    end
+                end)
+                RageUI.IsVisible(Clothes.subMenu8, function()
+                    for i = 0, maxVals['helmet_1'], 1 do
+                        RageUI.List("Chapeau #"..i, Clothes.Variations, Clothes.TableChapeau[i], nil, {RightLabel = "~g~30$"}, true, {
+                            onListChange = function(Index)
+                                Clothes.TableChapeau[i] = Index
+                                Offline.TriggerLocalEvent('skinchanger:change', 'helmet_2', Clothes.TableChapeau[i] - 1)
+                            end,
+                            onSelected = function()
+                                local message = 'Achat d\'un chapeau '..i
+                                Offline.SendEventToServer('offline:attemptToPayMenu', message, 30)
+                                paymentMenu.actions = {
+                                    onSucess = function()
+                                        Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
+                                            Offline.SendEventToServer('offline:AddClothesInInventory', 'helmet', 'Chapeau '..i, {skin.helmet_1, skin.helmet_2})
+                                        end)
+                                    end,
+                                    onFailed = function()
+                                        RageUI.CloseAll()
+                                        Clothes.opened = true
+                                        RageUI.Visible(Clothes.mainMenu, true)
+                                    end
+                                }
+                            end,
+                            onActive = function()
+                                Offline.TriggerLocalEvent('skinchanger:getSkin', function(skin)
+                                    if tonumber(skin.helmet_1) ~= tonumber(i) then
+                                        Offline.TriggerLocalEvent('skinchanger:change', 'helmet_1', i)
                                     end
                                 end)
                             end,

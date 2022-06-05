@@ -18,7 +18,8 @@ local ItemVetement = {
     ['chain'] = {-1, 0},
     ['bags'] = {-1, 0},
     ['helmet'] = {-1, 0},
-    ['glasses'] = {-1, 0}
+    ['glasses'] = {-1, 0},
+    ['ears'] = {-1, 0}
 }
 
 function DisableControlInventory()

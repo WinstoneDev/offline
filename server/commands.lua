@@ -145,5 +145,8 @@ Offline.Commands.RegisterCommand('announce', 3, function(player, args, showError
 end, {help = "Affiche un message pour tout le serveur", validate = true, arguments = {{name = 'message', help = 'Message', type = 'fullstring'}}}, false)
 
 Offline.Commands.RegisterCommand('kick', 1, function(player, args, showError)
-
-end, {help = "Permet de déconnecter un joueur", arguments = {{name = 'playerId', help = 'Id du joueur', type = 'player'}}}, false)
+	local player = Offline.GetPlayerFromId(args[1])
+	if player then
+		DropPlayer(player.source, args[2])
+	end
+end, {help = "Permet de déconnecter un joueur", validate = true, arguments = {{name = 'playerId', help = 'Id du joueur', type = 'player'}, {name = 'reason', help = "Raison du kick", type = "fullstring"}}}, false)

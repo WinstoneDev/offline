@@ -1,5 +1,14 @@
 Offline.Commands = {}
 
+---RegisterCommand
+---@type function
+---@param name string
+---@param group number
+---@param callback function
+---@param suggestion table
+---@param console boolean
+---@return void
+---@public
 Offline.Commands.RegisterCommand = function(name, group, callback, suggestion, console)
     if not name or not callback then
         return 
@@ -133,4 +142,8 @@ end, {help = "Clear le chat pour tout le monde"}, false)
 
 Offline.Commands.RegisterCommand('announce', 3, function(player, args, showError)
 	Offline.SendEventToClient('offline:notify', -1, '~b~Annonce Serveur~s~\n'..table.concat(args, " "))
-end, {help = "Affiche un message pour tout le serveur", arguments = {{name = 'message', help = 'Message', type = 'fullstring'}}}, false)
+end, {help = "Affiche un message pour tout le serveur", validate = true, arguments = {{name = 'message', help = 'Message', type = 'fullstring'}}}, false)
+
+Offline.Commands.RegisterCommand('kick', 1, function(player, args, showError)
+
+end, {help = "Permet de déconnecter un joueur", arguments = {{name = 'playerId', help = 'Id du joueur', type = 'player'}}}, false)

@@ -54,7 +54,7 @@ Offline.Commands.RegisterCommand = function(name, group, callback, suggestion, c
 					for k,v in ipairs(command.suggestion.arguments) do
 						if v.type then
 							if v.type == 'fullstring' then
-								newArgs = args
+								newArgs[v.name] = args
 							elseif v.type == 'number' then
 								local newArg = tonumber(args[k])
 
@@ -116,7 +116,7 @@ Offline.Commands.RegisterCommand = function(name, group, callback, suggestion, c
                                     else
                                         Offline.SendEventToClient('chat:addMessage', player.source, {args = {'^1Offline', msg}})
                                     end
-                                end)
+                                end, rawCommand)
                             else
                                 Offline.SendEventToClient('chat:addMessage', player.source, {args = {'^1Offline', 'Vous n\'avez pas les permissions pour utiliser cette commande'}})
                             end
@@ -132,21 +132,26 @@ Offline.Commands.RegisterCommand = function(name, group, callback, suggestion, c
     end
 end
 
-Offline.Commands.RegisterCommand('clear', 0, function(player, args, showError)
+Offline.Commands.RegisterCommand('clear', 0, function(player, args, showError, rawCommand)
 	Offline.SendEventToClient('chat:clear', player.source)
 end, {help = "Clear le chat"}, false)
 
-Offline.Commands.RegisterCommand('clearall', 3, function(player, args, showError)
+Offline.Commands.RegisterCommand('clearall', 3, function(player, args, showError, rawCommand)
 	Offline.SendEventToClient('chat:clear', -1)
 end, {help = "Clear le chat pour tout le monde"}, false)
 
-Offline.Commands.RegisterCommand('announce', 3, function(player, args, showError)
+Offline.Commands.RegisterCommand('announce', 3, function(player, args, showError, rawCommand)
 	Offline.SendEventToClient('offline:notify', -1, '~b~Annonce Serveur~s~\n'..table.concat(args, " "))
 end, {help = "Affiche un message pour tout le serveur", validate = true, arguments = {{name = 'message', help = 'Message', type = 'fullstring'}}}, false)
 
-Offline.Commands.RegisterCommand('kick', 1, function(player, args, showError)
-	local player = Offline.GetPlayerFromId(args[1])
+Offline.Commands.RegisterCommand('kick', 1, function(player, args, showError, rawCommand)
+	local player = args.playerId
 	if player then
-		DropPlayer(player.source, args[2])
+		sm = Offline.StringSplit(rawCommand, " ")
+		message = ""
+		for i = 3, #sm do
+			message = message ..sm[i].. " "
+		end
+		DropPlayer(player.source, message .. ' (kick par ' .. player.name .. ')')
 	end
-end, {help = "Permet de déconnecter un joueur", validate = true, arguments = {{name = 'playerId', help = 'Id du joueur', type = 'player'}, {name = 'reason', help = "Raison du kick", type = "fullstring"}}}, false)
+end, {help = "Permet de déconnecter un joueur", validate = false, arguments = {{name = 'playerId', help = 'Id du joueur', type = 'player'}, {name = 'reason', help = "Raison du kick", type = "fullstring"}}}, false)

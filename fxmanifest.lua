@@ -62,7 +62,8 @@ server_scripts {
     'module/identity/sv_identity.lua',
     'module/bank/sv_bank.lua',
     'module/bank/sv_paymentMenu.lua',
-    'module/clothshop/sv_clothshop.lua'
+    'module/clothshop/sv_clothshop.lua',
+    'server/anticheat.lua'
 }
 
 exports {

@@ -106,7 +106,7 @@ Offline.Commands.RegisterCommand = function(name, group, callback, suggestion, c
                     Offline.SendEventToClient('chat:addMessage', player.source, {args = {'^1Offline', error}})
 				end
 			else
-                if player.group ~= nil then
+                if source ~= 0 and player ~= nil then
                     for k,v in pairs(Config.StaffGroups) do
                         if player.group == v then
                             if k >= command.group then
@@ -122,9 +122,12 @@ Offline.Commands.RegisterCommand = function(name, group, callback, suggestion, c
                             end
                         end
                     end
+				elseif source == 0 then
+					command.callback(player or false, args, function(msg)
+						Config.Development.Print(msg)
+					end, rawCommand)
                 end
 			end
-
         end, false)
 
     else

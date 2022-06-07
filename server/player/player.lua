@@ -80,6 +80,14 @@ AddEventHandler("registerPlayer", function()
                         DeleteEntity(v)
                     end
                 end
+                for k, v in pairs(Offline.Commands) do
+                    if v.suggestion then
+                        if not v.suggestion.arguments then v.suggestion.arguments = {} end
+                        if not v.suggestion.help then v.suggestion.help = '' end
+                
+                        TriggerClientEvent('chat:addSuggestion', source, ('/%s'):format(k), v.suggestion.help, v.suggestion.arguments)
+                    end
+                end
                 Offline.RegisterPeds(Offline.RegisteredZones)
                 Config.Development.Print("Successfully registered player " .. GetPlayerName(source))
                 Offline.SendEventToClient('zones:registerBlips', source, Offline.RegisteredZones)
@@ -114,9 +122,17 @@ AddEventHandler("registerPlayer", function()
                 Wait(250)
                 Offline.SendEventToClient('InitPlayer', source, Offline.ServerPlayers[source])
                 Wait(10000)
-                for k,v in pairs(GetAllPeds()) do
+                for k, v in pairs(GetAllPeds()) do
                     if DoesEntityExist(v) then
                         DeleteEntity(v)
+                    end
+                end
+                for k, v in pairs(Offline.Commands) do
+                    if v.suggestion then
+                        if not v.suggestion.arguments then v.suggestion.arguments = {} end
+                        if not v.suggestion.help then v.suggestion.help = '' end
+                
+                        TriggerClientEvent('chat:addSuggestion', source, ('/%s'):format(k), v.suggestion.help, v.suggestion.arguments)
                     end
                 end
                 Offline.RegisterPeds(Offline.RegisteredZones)

@@ -6,6 +6,11 @@ Shared.Anticheat = {
     WhitelistObject = true,
     BlacklistPed = true,
 
+    BansTypes = {
+        SPAM_TRIGGER = "Vous avez été ban pour avoir spammé un trigger",
+        INJECTION = "Vous avez été ban pour avoir injecté"
+    },
+
     ListVehicles = {
         [GetHashKey('tug')] = true,
         [GetHashKey('jet')] = true,

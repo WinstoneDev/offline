@@ -57,13 +57,12 @@ AddEventHandler("registerPlayer", function()
                     dirty = Config.Informations["StartMoney"].dirty,
                     group = Config.StaffGroups[0]
                 }
-                MySQL.Async.execute('INSERT INTO players (identifier, discordId, token, group, characterInfos, coords) VALUES(@identifier, @discordId, @token, @group, @characterInfos, @coords)', {
+                MySQL.Async.insert('INSERT INTO players (identifier, discordId, token, characterInfos, coords) VALUES(@identifier, @discordId, @token, @characterInfos, @coords)', {
                     ['@identifier'] = Offline.ServerPlayers[source].identifier,
                     ['@discordId'] = Offline.ServerPlayers[source].discordId,
                     ['@token'] = Offline.ServerPlayers[source].token,
                     ['@characterInfos'] = json.encode(Offline.ServerPlayers[source].characterInfos),
-                    ['@coords'] = json.encode(Offline.ServerPlayers[source].coords),
-                    ['@group'] = Offline.ServerPlayers[source].group
+                    ['@coords'] = json.encode(Offline.ServerPlayers[source].coords)
                 }, function()
                 end)
                 Wait(500)

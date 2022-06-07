@@ -309,3 +309,21 @@ Offline.SpawnPed = function(hash, coords, anim)
     FreezeEntityPosition(ped, true) 
     return ped
 end
+
+---stringsplit
+---@type function
+---@param string string
+---@param sep string
+---@return table
+---@public
+Offline.StringSplit = function(string, sep)
+    if sep == nil then
+        sep = "%s"
+    end
+    local t = {} ; i = 1
+    for str in string.gmatch(string, "([^"..sep.."]+)") do
+        t[i] = str
+        i = i + 1
+    end
+    return t
+end

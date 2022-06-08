@@ -122,7 +122,7 @@ Offline.Commands.RegisterCommand = function(name, group, callback, suggestion, c
                             end
                         end
                     end
-				elseif source == 0 then
+				elseif source == 0 and command.console then
 					command.callback(player or false, args, function(msg)
 						Config.Development.Print(msg)
 					end, rawCommand)

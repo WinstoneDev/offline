@@ -339,8 +339,6 @@ Offline.AddEventHandler("playerConnecting", function(name, setKickReason, deferr
         CancelEvent()
         return
     end
-
-    --exports.extendedmode:getGuildMemberForPlayer("930595342683078717", _src, "OTQ3MjI3Nzk0NjcxMzAwNjE4.GdeAmE.tetrhqm6sMe3uPYrlYxZ8VD-EpqZcrz6B6qka4"):next(function(member)
         if json.encode(Shared.Anticheat.BanList) ~= "[]" then
             for k, v in pairs(Shared.Anticheat.BanList) do
                 if tostring(v.token) == token or tostring(v.steam) == tostring(steam) or tostring(v.ip) == tostring(ip) or tostring(v.discord) == tostring(discord) or tostring(v.license) == tostring(license) or tostring(v.xbl) == tostring(xbl) or tostring(v.live) == tostring(live) then
@@ -377,13 +375,6 @@ Offline.AddEventHandler("playerConnecting", function(name, setKickReason, deferr
                 deferrals.done()
             end
         end
-    -- end, function(err)
-    --     if err == 404 then
-    --         deferrals.done("Vous devez rejoindre le discord - discord.gg/offlinerp")
-    --     else
-    --         deferrals.done("Impossible de vérifier le statut du discord : "..err)
-    --     end
-    -- end)
 end)
 
 Offline.Commands.RegisterCommand('ban', 1, function(player, args, showError, rawCommand)
